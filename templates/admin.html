@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin – Besucher</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #0f0f13; color: #e2e2e2; min-height: 100vh; }
+
+  header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a3a;
+           display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 1.1rem; color: #f87171; }
+  header a  { font-size: 0.8rem; color: #818cf8; text-decoration: none; }
+
+  /* Login */
+  .login-wrap { display: flex; justify-content: center; align-items: center;
+                min-height: 80vh; }
+  .login-box { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 12px;
+               padding: 32px; width: 100%; max-width: 360px; display: flex;
+               flex-direction: column; gap: 14px; }
+  .login-box h2 { color: #a78bfa; font-size: 1.1rem; }
+  .login-box input { background: #12121a; border: 1px solid #2a2a3a; border-radius: 6px;
+                     color: #e2e2e2; padding: 10px 14px; font-size: 0.95rem; width: 100%; }
+  .login-box button { background: #7c3aed; color: #fff; border: none; border-radius: 6px;
+                      padding: 10px; font-size: 0.95rem; cursor: pointer; }
+  .error { color: #f87171; font-size: 0.85rem; }
+
+  /* Stats bar */
+  .stats { display: flex; gap: 20px; padding: 16px 20px; flex-wrap: wrap; }
+  .stat  { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 8px;
+           padding: 12px 20px; }
+  .stat-val { font-size: 1.6rem; font-weight: 700; color: #a78bfa; }
+  .stat-lbl { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
+
+  /* Table */
+  .table-wrap { padding: 0 20px 40px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { background: #1a1a24; color: #818cf8; text-align: left;
+       padding: 10px 12px; border-bottom: 1px solid #2a2a3a; white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid #1e1e2a; vertical-align: top; }
+  tr:hover td { background: #1a1a24; }
+  .badge-new  { background: #14532d; color: #86efac; padding: 2px 8px;
+                border-radius: 999px; font-size: 0.7rem; }
+  .badge-ret  { background: #1e3a5f; color: #93c5fd; padding: 2px 8px;
+                border-radius: 999px; font-size: 0.7rem; }
+  .pages-list { color: #6b7280; font-size: 0.75rem; }
+  .btn-del { background: none; border: 1px solid #3f1a1a; color: #f87171;
+             border-radius: 5px; padding: 3px 8px; cursor: pointer; font-size: 0.72rem; }
+  .btn-del:hover { background: #3f1a1a; }
+  .ua { color: #4b5563; font-size: 0.72rem; word-break: break-all; max-width: 200px; }
+</style>
+</head>
+<body>
+
+{% if not logged_in %}
+  <div class="login-wrap">
+    <div class="login-box">
+      <h2>🔒 Admin-Login</h2>
+      {% if error %}<div class="error">{{ error }}</div>{% endif %}
+      <form method="POST">
+        <input type="password" name="password" placeholder="Passwort" autofocus>
+        <br><br>
+        <button type="submit">Anmelden</button>
+      </form>
+    </div>
+  </div>
+
+{% else %}
+  <header>
+    <h1>🛡 Besucher-Übersicht</h1>
+    <a href="logout">Abmelden</a>
+  </header>
+
+  {% set total = visitors | length %}
+  {% set new_v = visitors | selectattr('visits', 'equalto', 1) | list | length %}
+  {% set returning = total - new_v %}
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-val">{{ total }}</div>
+      <div class="stat-lbl">Besucher gesamt</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">{{ new_v }}</div>
+      <div class="stat-lbl">Neue Besucher</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">{{ returning }}</div>
+      <div class="stat-lbl">Wiederkehrende</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    {% if visitors %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Status</th>
+          <th>IP</th>
+          <th>Besuche</th>
+          <th>Zuerst gesehen</th>
+          <th>Zuletzt gesehen</th>
+          <th>Seiten</th>
+          <th>Browser</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in visitors %}
+        <tr>
+          <td style="color:#4b5563">{{ loop.index }}</td>
+          <td>
+            {% if v.visits == 1 %}
+              <span class="badge-new">Neu</span>
+            {% else %}
+              <span class="badge-ret">Wiederkehrer</span>
+            {% endif %}
+          </td>
+          <td>{{ v.ip }}</td>
+          <td style="text-align:center">{{ v.visits }}</td>
+          <td style="white-space:nowrap">{{ v.first_seen }}</td>
+          <td style="white-space:nowrap">{{ v.last_seen }}</td>
+          <td>
+            <div class="pages-list">
+              {% for p in v.pages.split('|') if p %}
+                <div>{{ p }}</div>
+              {% endfor %}
+            </div>
+          </td>
+          <td><div class="ua">{{ v.user_agent[:80] }}</div></td>
+          <td>
+            <form method="POST" action="delete/{{ v.id }}"
+                  onsubmit="return confirm('Besucher löschen?')">
+              <button class="btn-del" type="submit">✕</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p style="color:#4b5563; padding:20px">Noch keine Besucher.</p>
+    {% endif %}
+  </div>
+{% endif %}
+
+</body>
+</html>

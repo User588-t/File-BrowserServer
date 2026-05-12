@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mediathek</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #0f0f13; color: #e2e2e2; min-height: 100vh; }
+
+header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a3a;
+           display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header h1 { font-size: 1.1rem; color: #a78bfa; font-weight: 600; }
+
+  #up-btn { background: #374151; color: #e2e2e2; border: none; border-radius: 6px;
+            padding: 6px 12px; cursor: pointer; font-size: 0.9rem; }
+  #up-btn:hover { background: #4b5563; }
+  #up-btn:disabled { background: #2a2a3a; color: #555; cursor: not-allowed; }
+
+  .breadcrumb { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 0.85rem; }
+  .breadcrumb a { color: #818cf8; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { color: #555; }
+
+  /* ── Selection toolbar ── */
+  #sel-bar { position: sticky; top: 0; z-index: 50; background: #1e1b30;
+             border-bottom: 1px solid #3b2d6e; padding: 10px 20px;
+             display: none; align-items: center; gap: 10px; flex-wrap: wrap; }
+  #sel-bar.active { display: flex; }
+  #sel-count { font-size: 0.9rem; color: #c4b5fd; flex: 1; }
+  #sel-bar button { font-size: 0.8rem; padding: 6px 14px; border-radius: 6px;
+                    border: none; cursor: pointer; }
+  #btn-all  { background: #374151; color: #e2e2e2; }
+  #btn-none { background: #374151; color: #e2e2e2; }
+  #btn-dl   { background: #7c3aed; color: #fff; }
+  #btn-all:hover  { background: #4b5563; }
+  #btn-none:hover { background: #4b5563; }
+  #btn-dl:hover   { background: #6d28d9; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 12px; padding: 20px; }
+
+  .card { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 10px;
+          padding: 14px; transition: border-color .2s, transform .15s;
+          display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .card:hover { border-color: #6d28d9; transform: translateY(-2px); }
+  .card.selected { border-color: #7c3aed; background: #1e1535; }
+
+  /* checkbox */
+  .card-check { position: absolute; top: 8px; left: 8px; z-index: 2;
+                width: 18px; height: 18px; cursor: pointer; accent-color: #7c3aed; }
+
+  .card-body { cursor: pointer; display: flex; flex-direction: column; gap: 8px; }
+  .card-icon { font-size: 2.2rem; text-align: center; }
+  .card-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+  .card-name { font-size: 0.82rem; word-break: break-word; color: #cbd5e1; text-align: center; }
+  .card-size { font-size: 0.72rem; color: #555; text-align: center; }
+  .card-actions { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+
+  .btn { font-size: 0.72rem; padding: 4px 10px; border-radius: 5px; border: none;
+         cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn-play { background: #7c3aed; color: #fff; }
+  .btn-dl   { background: #1e3a5f; color: #93c5fd; }
+  .btn-play:hover { background: #6d28d9; }
+  .btn-dl:hover   { background: #1e40af; }
+
+  /* ── Music Player ── */
+  #player-bar { position: fixed; bottom: 0; left: 0; right: 0;
+                background: #12121a; border-top: 1px solid #2a2a3a;
+                padding: 10px 16px; display: none; flex-direction: column; gap: 6px; z-index: 100; }
+  #player-bar.active { display: flex; }
+  #player-title { font-size: 0.82rem; color: #a78bfa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  audio#audio-el { width: 100%; height: 32px; }
+
+  /* ── Lightbox ── */
+  #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.88);
+              z-index: 200; align-items: center; justify-content: center; }
+  #lightbox.active { display: flex; }
+  #lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 8px; box-shadow: 0 0 40px #000; }
+  #lightbox-close { position: absolute; top: 16px; right: 20px; font-size: 2rem;
+                    color: #fff; cursor: pointer; background: none; border: none; }
+
+  .folder-card { border-color: #2a3a2a; cursor: pointer; }
+  .folder-card:hover { border-color: #16a34a; }
+
+  /* Load More */
+  #load-more-wrap { text-align: center; padding: 0 20px 30px; display: none; }
+  #load-more-btn { background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+                   padding: 12px 32px; font-size: 1rem; cursor: pointer;
+                   width: 100%; max-width: 320px; }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📁 Mediathek</h1>
+  <button id="up-btn" onclick="goUp()">⬆ Up</button>
+  <nav class="breadcrumb">
+    {% for name, path in breadcrumbs %}
+      {% if not loop.last %}
+        <a href="{% if path == '' %}/{% else %}/browse/{{ path }}{% endif %}">{{ name }}</a><span>/</span>
+      {% else %}
+        <strong>{{ name }}</strong>
+      {% endif %}
+    {% endfor %}
+  </nav>
+</header>
+
+<!-- Selection toolbar -->
+<div id="sel-bar">
+  <span id="sel-count">0 ausgewählt</span>
+  <button id="btn-all"  onclick="selectAll()">Alle</button>
+  <button id="btn-none" onclick="selectNone()">Keine</button>
+  <button id="btn-dl"   onclick="downloadSelected()">⬇ Herunterladen</button>
+</div>
+
+<div class="grid">
+  {% for e in entries %}
+    {% if e.is_dir %}
+      <div class="card folder-card" onclick="location.href='/browse/{{ e.rel }}'">
+        <div class="card-icon">📂</div>
+        <div class="card-name">{{ e.name }}</div>
+      </div>
+
+    {% elif e.type == 'image' %}
+      <div class="card" data-rel="{{ e.rel }}">
+        <input class="card-check" type="checkbox" onclick="toggleCard(this)">
+        <div class="card-body" onclick="openLightbox('/file/{{ e.rel }}')">
+          <img class="card-thumb" src="/file/{{ e.rel }}" loading="lazy" alt="{{ e.name }}">
+          <div class="card-name">{{ e.name }}</div>
+          <div class="card-size">{{ e.size }}</div>
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
+          </div>
+        </div>
+      </div>
+
+    {% elif e.type == 'audio' %}
+      <div class="card" data-rel="{{ e.rel }}">
+        <input class="card-check" type="checkbox" onclick="toggleCard(this)">
+        <div class="card-body" onclick="playAudio('/file/{{ e.rel }}', '{{ e.name }}')">
+          <div class="card-icon">🎵</div>
+          <div class="card-name">{{ e.name }}</div>
+          <div class="card-size">{{ e.size }}</div>
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="btn btn-play" onclick="playAudio('/file/{{ e.rel }}','{{ e.name }}')">▶ Play</button>
+            <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
+          </div>
+        </div>
+      </div>
+
+    {% elif e.type == 'video' %}
+      <div class="card" data-rel="{{ e.rel }}">
+        <input class="card-check" type="checkbox" onclick="toggleCard(this)">
+        <div class="card-body">
+          <div class="card-icon">🎬</div>
+          <div class="card-name">{{ e.name }}</div>
+          <div class="card-size">{{ e.size }}</div>
+          <div class="card-actions">
+            <a class="btn btn-play" href="/file/{{ e.rel }}" target="_blank">▶ Abspielen</a>
+            <a class="btn btn-dl"  href="/download/{{ e.rel }}">⬇ Download</a>
+          </div>
+        </div>
+      </div>
+
+    {% else %}
+      <div class="card" data-rel="{{ e.rel }}">
+        <input class="card-check" type="checkbox" onclick="toggleCard(this)">
+        <div class="card-body">
+          <div class="card-icon">📄</div>
+          <div class="card-name">{{ e.name }}</div>
+          <div class="card-size">{{ e.size }}</div>
+          <div class="card-actions">
+            <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<div id="load-more-wrap">
+  <button id="load-more-btn" onclick="loadMore()">
+    Mehr laden <span id="load-more-count"></span>
+  </button>
+</div>
+
+<div style="height: 90px"></div>
+
+<!-- Music Player -->
+<div id="player-bar">
+  <div id="player-title">–</div>
+  <audio id="audio-el" controls autoplay></audio>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+  // ── Visitor Tracking ──
+  (function() {
+    let id = localStorage.getItem("visitor_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("visitor_id", id);
+    }
+    fetch("/api/visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, page: location.pathname })
+    });
+  })();
+
+  // ── Music Player ──
+  function playAudio(src, title) {
+    const audio = document.getElementById("audio-el");
+    document.getElementById("player-title").textContent = "♪ " + title;
+    audio.src = src;
+    audio.play();
+    document.getElementById("player-bar").classList.add("active");
+  }
+
+  // ── Lightbox ──
+  function openLightbox(src) {
+    document.getElementById("lightbox-img").src = src;
+    document.getElementById("lightbox").classList.add("active");
+  }
+  function closeLightbox() {
+    document.getElementById("lightbox").classList.remove("active");
+    document.getElementById("lightbox-img").src = "";
+  }
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeLightbox(); });
+
+  // ── Checkboxes ──
+  function toggleCard(cb) {
+    cb.closest(".card").classList.toggle("selected", cb.checked);
+    updateSelBar();
+  }
+
+  function updateSelBar() {
+    const checked = document.querySelectorAll(".card-check:checked");
+    const bar = document.getElementById("sel-bar");
+    document.getElementById("sel-count").textContent = checked.length + " ausgewählt";
+    bar.classList.toggle("active", checked.length > 0);
+  }
+
+  function selectAll() {
+    document.querySelectorAll(".card-check").forEach(cb => {
+      cb.checked = true;
+      cb.closest(".card").classList.add("selected");
+    });
+    updateSelBar();
+  }
+
+  function selectNone() {
+    document.querySelectorAll(".card-check").forEach(cb => {
+      cb.checked = false;
+      cb.closest(".card").classList.remove("selected");
+    });
+    updateSelBar();
+  }
+
+  function downloadSelected() {
+    const rels = Array.from(document.querySelectorAll(".card-check:checked"))
+                      .map(cb => cb.closest(".card").dataset.rel);
+    rels.forEach((rel, i) => {
+      setTimeout(() => {
+        const a = document.createElement("a");
+        a.href = "/download/" + rel;
+        a.download = "";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }, i * 400);
+    });
+  }
+
+  // ── Load More ──
+  const BATCH = 20;
+  const cards = Array.from(document.querySelectorAll(".grid .card"));
+  let shown = 0;
+
+  function showBatch() {
+    const next = Math.min(shown + BATCH, cards.length);
+    for (let i = shown; i < next; i++) cards[i].style.display = "";
+    shown = next;
+    const remaining = cards.length - shown;
+    const wrap = document.getElementById("load-more-wrap");
+    if (remaining > 0) {
+      wrap.style.display = "block";
+      document.getElementById("load-more-count").textContent = `(${remaining} weitere)`;
+    } else {
+      wrap.style.display = "none";
+    }
+  }
+
+  function loadMore() { showBatch(); }
+
+  function goUp() {
+    const path = window.location.pathname;
+    let rel = "";
+    if (path.startsWith("/browse/")) {
+      rel = path.slice(8);
+    }
+    const parts = rel.split("/").filter(p => p);
+    if (parts.length === 0) {
+      // Already at root, do nothing
+      return;
+    }
+    const newRel = parts.slice(0, -1).join("/");
+    const newUrl = newRel ? "/browse/" + newRel : "/";
+    window.location.href = newUrl;
+  }
+
+  // Initialize up button
+  const upBtn = document.getElementById("up-btn");
+  const path = window.location.pathname;
+  let rel = "";
+  if (path.startsWith("/browse/")) {
+    rel = path.slice(8);
+  }
+  const parts = rel.split("/").filter(p => p);
+  upBtn.disabled = parts.length === 0;
+
+  if (cards.length > BATCH) {
+    cards.forEach(c => c.style.display = "none");
+    showBatch();
+  }
+</script>
+</body>
+</html>
