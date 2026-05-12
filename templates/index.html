@@ -1,21 +1,16 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="{{ config.default_lang }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mediathek</title>
+<title>{{ config.site_title }}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, sans-serif; background: #0f0f13; color: #e2e2e2; min-height: 100vh; }
 
-header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a3a;
+  header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a3a;
            display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   header h1 { font-size: 1.1rem; color: #a78bfa; font-weight: 600; }
-
-  #up-btn { background: #374151; color: #e2e2e2; border: none; border-radius: 6px;
-            padding: 6px 12px; cursor: pointer; font-size: 0.9rem; }
-  #up-btn:hover { background: #4b5563; }
-  #up-btn:disabled { background: #2a2a3a; color: #555; cursor: not-allowed; }
 
   .breadcrumb { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 0.85rem; }
   .breadcrumb a { color: #818cf8; text-decoration: none; }
@@ -37,7 +32,7 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
   #btn-none:hover { background: #4b5563; }
   #btn-dl:hover   { background: #6d28d9; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
           gap: 12px; padding: 20px; }
 
   .card { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 10px;
@@ -72,22 +67,60 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
   #player-title { font-size: 0.82rem; color: #a78bfa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   audio#audio-el { width: 100%; height: 32px; }
 
+  /* ── Photo Gallery Cards ── */
+  .photo-card { padding: 0; overflow: hidden; aspect-ratio: 1; cursor: pointer; }
+  .photo-card:hover { transform: none; border-color: #7c3aed; }
+  .photo-thumb { width: 100%; height: 100%; object-fit: cover; display: block;
+                 transition: transform .3s; }
+  .photo-card:hover .photo-thumb { transform: scale(1.07); }
+  .photo-overlay { position: absolute; inset: 0;
+                   background: linear-gradient(transparent 45%, rgba(0,0,0,.8) 100%);
+                   opacity: 0; transition: opacity .2s;
+                   display: flex; flex-direction: column;
+                   justify-content: flex-end; padding: 8px; gap: 4px; }
+  .photo-card:hover .photo-overlay { opacity: 1; }
+  .photo-overlay .photo-name { font-size: 0.72rem; color: #fff;
+                                word-break: break-word; line-height: 1.3; }
+  .photo-overlay .btn-dl { align-self: flex-start; font-size: 0.65rem; }
+
   /* ── Lightbox ── */
-  #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.88);
+  #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92);
               z-index: 200; align-items: center; justify-content: center; }
   #lightbox.active { display: flex; }
-  #lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 8px; box-shadow: 0 0 40px #000; }
+  #lightbox-img { max-width: 88vw; max-height: 85vh; border-radius: 6px;
+                  box-shadow: 0 0 60px #000; object-fit: contain;
+                  display: block; }
   #lightbox-close { position: absolute; top: 16px; right: 20px; font-size: 2rem;
                     color: #fff; cursor: pointer; background: none; border: none; }
+  #lightbox-prev, #lightbox-next {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,.12); border: none; color: #fff;
+    font-size: 2.2rem; width: 54px; height: 54px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .15s; user-select: none; }
+  #lightbox-prev { left: 16px; }
+  #lightbox-next { right: 16px; }
+  #lightbox-prev:hover, #lightbox-next:hover { background: rgba(255,255,255,.28); }
+  #lightbox-counter { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+                      color: rgba(255,255,255,.65); font-size: 0.85rem; pointer-events: none; }
 
   .folder-card { border-color: #2a3a2a; cursor: pointer; }
   .folder-card:hover { border-color: #16a34a; }
 
-  /* Load More */
-  #load-more-wrap { text-align: center; padding: 0 20px 30px; display: none; }
-  #load-more-btn { background: #7c3aed; color: #fff; border: none; border-radius: 8px;
-                   padding: 12px 32px; font-size: 1rem; cursor: pointer;
-                   width: 100%; max-width: 320px; }
+  /* ── Up button (Total Commander style) ── */
+  .btn-up { background: #2a2a1a; color: #facc15; border: 1px solid #6b5a10;
+            border-radius: 5px; padding: 4px 12px; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; text-decoration: none; white-space: nowrap;
+            font-family: monospace; letter-spacing: 0.02em; }
+  .btn-up:hover { background: #3a3a10; border-color: #facc15; }
+
+  /* ── Language toggle ── */
+  .lang-toggle { margin-left: auto; display: flex; gap: 4px; }
+  .lang-btn { background: #2a2a3a; color: #818cf8; border: 1px solid #3a3a4a;
+              border-radius: 4px; padding: 3px 10px; font-size: 0.8rem;
+              cursor: pointer; font-weight: 600; transition: background .15s; }
+  .lang-btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+  .lang-btn:hover:not(.active) { background: #3a3a4a; }
 
   @media (max-width: 480px) {
     .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
@@ -97,45 +130,52 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
 <body>
 
 <header>
-  <h1>📁 Mediathek</h1>
-  <button id="up-btn" onclick="goUp()">⬆ Up</button>
+  <h1 data-i18n="site_title">{{ config.translations[config.default_lang].site_title }}</h1>
+  {% if breadcrumbs|length > 1 %}
+    <a class="btn-up" href="/browse/{{ breadcrumbs[-2][1] }}">[..]</a>
+  {% endif %}
   <nav class="breadcrumb">
     {% for name, path in breadcrumbs %}
       {% if not loop.last %}
-        <a href="{% if path == '' %}/{% else %}/browse/{{ path }}{% endif %}">{{ name }}</a><span>/</span>
+        <a href="/browse/{{ path }}">{{ name }}</a><span>/</span>
       {% else %}
         <strong>{{ name }}</strong>
       {% endif %}
     {% endfor %}
   </nav>
+  <div class="lang-toggle">
+    <button class="lang-btn" id="lang-de" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" id="lang-ru" onclick="setLang('ru')">RU</button>
+  </div>
 </header>
 
 <!-- Selection toolbar -->
 <div id="sel-bar">
-  <span id="sel-count">0 ausgewählt</span>
-  <button id="btn-all"  onclick="selectAll()">Alle</button>
-  <button id="btn-none" onclick="selectNone()">Keine</button>
-  <button id="btn-dl"   onclick="downloadSelected()">⬇ Herunterladen</button>
+  <span id="sel-count"></span>
+  <button id="btn-all"  onclick="selectAll()"        data-i18n="select_all"></button>
+  <button id="btn-none" onclick="selectNone()"       data-i18n="select_none"></button>
+  <button id="btn-dl"   onclick="downloadSelected()" data-i18n="download_selected"></button>
 </div>
 
 <div class="grid">
   {% for e in entries %}
     {% if e.is_dir %}
-      <div class="card folder-card" onclick="location.href='/browse/{{ e.rel }}'">
+      <div class="card folder-card" data-nav="/browse/{{ e.rel }}">
         <div class="card-icon">📂</div>
         <div class="card-name">{{ e.name }}</div>
       </div>
 
     {% elif e.type == 'image' %}
-      <div class="card" data-rel="{{ e.rel }}">
-        <input class="card-check" type="checkbox" onclick="toggleCard(this)">
-        <div class="card-body" onclick="openLightbox('/file/{{ e.rel }}')">
-          <img class="card-thumb" src="/file/{{ e.rel }}" loading="lazy" alt="{{ e.name }}">
-          <div class="card-name">{{ e.name }}</div>
-          <div class="card-size">{{ e.size }}</div>
-          <div class="card-actions" onclick="event.stopPropagation()">
-            <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
-          </div>
+      <div class="card photo-card" data-rel="{{ e.rel }}"
+           data-src="/file/{{ e.rel }}" data-name="{{ e.name }}"
+           onclick="openLightboxFromCard(this)">
+        <input class="card-check" type="checkbox"
+               onclick="toggleCard(this); event.stopPropagation()">
+        <img class="photo-thumb" src="/file/{{ e.rel }}" loading="lazy" alt="{{ e.name }}">
+        <div class="photo-overlay">
+          <div class="photo-name">{{ e.name }}</div>
+          <a class="btn btn-dl" href="/download/{{ e.rel }}"
+             onclick="event.stopPropagation()" data-i18n="download"></a>
         </div>
       </div>
 
@@ -147,8 +187,8 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
           <div class="card-name">{{ e.name }}</div>
           <div class="card-size">{{ e.size }}</div>
           <div class="card-actions" onclick="event.stopPropagation()">
-            <button class="btn btn-play" onclick="playAudio('/file/{{ e.rel }}','{{ e.name }}')">▶ Play</button>
-            <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
+            <button class="btn btn-play" onclick="playAudio('/file/{{ e.rel }}','{{ e.name }}')" data-i18n="play"></button>
+            <a class="btn btn-dl" href="/download/{{ e.rel }}" data-i18n="download"></a>
           </div>
         </div>
       </div>
@@ -161,8 +201,8 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
           <div class="card-name">{{ e.name }}</div>
           <div class="card-size">{{ e.size }}</div>
           <div class="card-actions">
-            <a class="btn btn-play" href="/file/{{ e.rel }}" target="_blank">▶ Abspielen</a>
-            <a class="btn btn-dl"  href="/download/{{ e.rel }}">⬇ Download</a>
+            <a class="btn btn-play" href="/file/{{ e.rel }}" target="_blank" data-i18n="play"></a>
+            <a class="btn btn-dl"  href="/download/{{ e.rel }}" data-i18n="download"></a>
           </div>
         </div>
       </div>
@@ -175,18 +215,12 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
           <div class="card-name">{{ e.name }}</div>
           <div class="card-size">{{ e.size }}</div>
           <div class="card-actions">
-            <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
+            <a class="btn btn-dl" href="/download/{{ e.rel }}" data-i18n="download"></a>
           </div>
         </div>
       </div>
     {% endif %}
   {% endfor %}
-</div>
-
-<div id="load-more-wrap">
-  <button id="load-more-btn" onclick="loadMore()">
-    Mehr laden <span id="load-more-count"></span>
-  </button>
 </div>
 
 <div style="height: 90px"></div>
@@ -200,10 +234,39 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
 <!-- Lightbox -->
 <div id="lightbox" onclick="closeLightbox()">
   <button id="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img id="lightbox-img" src="" alt="">
+  <button id="lightbox-prev" onclick="event.stopPropagation(); stepLightbox(-1)">&#8249;</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+  <button id="lightbox-next" onclick="event.stopPropagation(); stepLightbox(1)">&#8250;</button>
+  <div id="lightbox-counter"></div>
 </div>
 
 <script>
+  // ── i18n ──
+  const TRANSLATIONS = {{ config.translations | tojson }};
+  const DEFAULT_LANG  = "{{ config.default_lang }}";
+  let currentLang = localStorage.getItem("lang") || DEFAULT_LANG;
+
+  function t(key) {
+    return (TRANSLATIONS[currentLang] || TRANSLATIONS[DEFAULT_LANG])[key] || key;
+  }
+
+  function applyLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.id === "lang-" + lang);
+    });
+    updateSelBar();
+  }
+
+  function setLang(lang) {
+    localStorage.setItem("lang", lang);
+    applyLang(lang);
+  }
+
   // ── Visitor Tracking ──
   (function() {
     let id = localStorage.getItem("visitor_id");
@@ -227,16 +290,48 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
     document.getElementById("player-bar").classList.add("active");
   }
 
-  // ── Lightbox ──
-  function openLightbox(src) {
-    document.getElementById("lightbox-img").src = src;
+  // ── Photo Gallery Lightbox ──
+  let photoList = [], photoIdx = 0;
+
+  function buildPhotoList() {
+    photoList = Array.from(document.querySelectorAll(".photo-card"))
+      .map(c => ({ src: c.dataset.src, name: c.dataset.name }));
+  }
+
+  function openLightboxFromCard(card) {
+    buildPhotoList();
+    photoIdx = Array.from(document.querySelectorAll(".photo-card")).indexOf(card);
+    showLightboxPhoto();
     document.getElementById("lightbox").classList.add("active");
   }
+
+  function showLightboxPhoto() {
+    const p = photoList[photoIdx];
+    document.getElementById("lightbox-img").src = p.src;
+    document.getElementById("lightbox-img").alt = p.name;
+    document.getElementById("lightbox-counter").textContent =
+      (photoIdx + 1) + " / " + photoList.length;
+    const show = photoList.length > 1;
+    document.getElementById("lightbox-prev").style.display = show ? "" : "none";
+    document.getElementById("lightbox-next").style.display = show ? "" : "none";
+  }
+
+  function stepLightbox(dir) {
+    photoIdx = (photoIdx + dir + photoList.length) % photoList.length;
+    showLightboxPhoto();
+  }
+
   function closeLightbox() {
     document.getElementById("lightbox").classList.remove("active");
     document.getElementById("lightbox-img").src = "";
   }
-  document.addEventListener("keydown", e => { if (e.key === "Escape") closeLightbox(); });
+
+  document.addEventListener("keydown", e => {
+    if (!document.getElementById("lightbox").classList.contains("active")) return;
+    if (e.key === "Escape")      closeLightbox();
+    if (e.key === "ArrowLeft")   stepLightbox(-1);
+    if (e.key === "ArrowRight")  stepLightbox(1);
+  });
 
   // ── Checkboxes ──
   function toggleCard(cb) {
@@ -247,7 +342,7 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
   function updateSelBar() {
     const checked = document.querySelectorAll(".card-check:checked");
     const bar = document.getElementById("sel-bar");
-    document.getElementById("sel-count").textContent = checked.length + " ausgewählt";
+    document.getElementById("sel-count").textContent = checked.length + " " + t("selected");
     bar.classList.toggle("active", checked.length > 0);
   }
 
@@ -282,57 +377,35 @@ header { background: #1a1a24; padding: 14px 20px; border-bottom: 1px solid #2a2a
     });
   }
 
-  // ── Load More ──
-  const BATCH = 20;
-  const cards = Array.from(document.querySelectorAll(".grid .card"));
-  let shown = 0;
 
-  function showBatch() {
-    const next = Math.min(shown + BATCH, cards.length);
-    for (let i = shown; i < next; i++) cards[i].style.display = "";
-    shown = next;
-    const remaining = cards.length - shown;
-    const wrap = document.getElementById("load-more-wrap");
-    if (remaining > 0) {
-      wrap.style.display = "block";
-      document.getElementById("load-more-count").textContent = `(${remaining} weitere)`;
-    } else {
-      wrap.style.display = "none";
-    }
+  // ── SPA Navigation (Audio läuft weiter) ──
+  function navigate(url) {
+    fetch(url)
+      .then(r => r.text())
+      .then(html => {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        document.querySelector("header").innerHTML = doc.querySelector("header").innerHTML;
+        document.querySelector(".grid").innerHTML  = doc.querySelector(".grid").innerHTML;
+        history.pushState(null, "", url);
+        selectNone();
+        applyLang(currentLang);
+      });
   }
 
-  function loadMore() { showBatch(); }
+  window.addEventListener("popstate", () => navigate(location.pathname + location.search));
 
-  function goUp() {
-    const path = window.location.pathname;
-    let rel = "";
-    if (path.startsWith("/browse/")) {
-      rel = path.slice(8);
-    }
-    const parts = rel.split("/").filter(p => p);
-    if (parts.length === 0) {
-      // Already at root, do nothing
-      return;
-    }
-    const newRel = parts.slice(0, -1).join("/");
-    const newUrl = newRel ? "/browse/" + newRel : "/";
-    window.location.href = newUrl;
-  }
+  document.addEventListener("click", e => {
+    const folder = e.target.closest(".folder-card[data-nav]");
+    if (folder) { navigate(folder.dataset.nav); return; }
 
-  // Initialize up button
-  const upBtn = document.getElementById("up-btn");
-  const path = window.location.pathname;
-  let rel = "";
-  if (path.startsWith("/browse/")) {
-    rel = path.slice(8);
-  }
-  const parts = rel.split("/").filter(p => p);
-  upBtn.disabled = parts.length === 0;
+    const upBtn = e.target.closest(".btn-up");
+    if (upBtn) { e.preventDefault(); navigate(upBtn.getAttribute("href")); return; }
 
-  if (cards.length > BATCH) {
-    cards.forEach(c => c.style.display = "none");
-    showBatch();
-  }
+    const bcLink = e.target.closest(".breadcrumb a");
+    if (bcLink) { e.preventDefault(); navigate(bcLink.getAttribute("href")); }
+  });
+
+  applyLang(currentLang);
 </script>
 </body>
 </html>

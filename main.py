@@ -1,15 +1,44 @@
 from flask import (Flask, send_from_directory, render_template,
                    abort, request, Response, jsonify, session, redirect, url_for)
 from pathlib import Path
-import os, io, sqlite3, datetime, secrets
+import os, io, sqlite3, datetime, secrets, json, logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)   # neu bei jedem Start — für Produktion fixen Wert setzen
 
-ROOT       = Path("Q:/")
+CONFIG     = json.loads(Path("config.json").read_text(encoding="utf-8"))
+
+# ── Logging Setup ─────────────────────────────────────────────
+def setup_logging():
+    level   = getattr(logging, CONFIG.get("log_level", "INFO").upper(), logging.INFO)
+    handler = RotatingFileHandler(
+        CONFIG.get("log_file", "server.log"),
+        maxBytes=CONFIG.get("log_max_bytes", 5_242_880),
+        backupCount=CONFIG.get("log_backup_count", 3),
+        encoding="utf-8",
+    )
+    handler.setFormatter(logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    ))
+    logging.getLogger().setLevel(level)
+    logging.getLogger().addHandler(handler)
+    # Flask- und Werkzeug-Logger in dieselbe Datei leiten
+    for name in ("werkzeug", app.logger.name):
+        lg = logging.getLogger(name)
+        lg.handlers.clear()
+        lg.addHandler(handler)
+        lg.setLevel(level)
+        lg.propagate = False
+
+setup_logging()
+log = logging.getLogger(__name__)
+log.info("Server gestartet — root=%s", CONFIG["root_path"])
+ROOT       = Path(CONFIG["root_path"])
 DB_PATH    = Path("visitors.db")
-ADMIN_PASS = "admin123"          # <-- hier Passwort ändern!
-ADMIN_PATH = "geheim-admin"      # <-- geheime URL: /geheim-admin
+ADMIN_PASS = CONFIG["admin_password"]
+ADMIN_PATH = CONFIG["admin_path"]
 
 AUDIO_EXT = {".mp3", ".wav", ".flac", ".ogg", ".m4a", ".aac", ".wma"}
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg"}
@@ -36,6 +65,19 @@ def init_db():
         """)
 
 init_db()
+
+# ── Request Logging ───────────────────────────────────────────
+@app.after_request
+def log_request(response):
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    msg = f'{ip} {request.method} {request.path} {response.status_code}'
+    if response.status_code >= 500:
+        log.error(msg)
+    elif response.status_code >= 400:
+        log.warning(msg)
+    else:
+        log.info(msg)
+    return response
 
 # ── Helpers ───────────────────────────────────────────────────
 def file_type(name):
@@ -87,20 +129,23 @@ def api_visit():
 @app.route(f"/{ADMIN_PATH}", methods=["GET", "POST"])
 def admin():
     if request.method == "POST":
+        ip = request.headers.get("X-Forwarded-For", request.remote_addr)
         if request.form.get("password") == ADMIN_PASS:
             session["admin"] = True
+            log.info("Admin-Login erfolgreich — ip=%s", ip)
         else:
-            return render_template("admin.html", error="Falsches Passwort", logged_in=False)
+            log.warning("Admin-Login fehlgeschlagen — ip=%s", ip)
+            return render_template("admin.html", error="Falsches Passwort", logged_in=False, config=CONFIG)
 
     if not session.get("admin"):
-        return render_template("admin.html", logged_in=False)
+        return render_template("admin.html", logged_in=False, config=CONFIG)
 
     with get_db() as db:
         visitors = db.execute(
             "SELECT * FROM visitors ORDER BY last_seen DESC"
         ).fetchall()
 
-    return render_template("admin.html", logged_in=True, visitors=visitors)
+    return render_template("admin.html", logged_in=True, visitors=visitors, config=CONFIG)
 
 @app.route(f"/{ADMIN_PATH}/logout")
 def admin_logout():
@@ -138,7 +183,7 @@ def browse(rel):
     for i, p in enumerate(parts):
         breadcrumbs.append((p, "/".join(parts[:i+1])))
 
-    return render_template("index.html", entries=entries, breadcrumbs=breadcrumbs, rel=rel)
+    return render_template("index.html", entries=entries, breadcrumbs=breadcrumbs, rel=rel, config=CONFIG)
 
 @app.route("/file/<path:rel>")
 def serve_file(rel):
@@ -152,6 +197,8 @@ def download(rel):
     path = safe_path(rel)
     if not path.is_file():
         abort(404)
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    log.info("Download — ip=%s file=%s", ip, rel)
     return send_from_directory(path.parent, path.name, as_attachment=True)
 
 if __name__ == "__main__":

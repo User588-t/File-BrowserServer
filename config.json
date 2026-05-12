@@ -1,0 +1,31 @@
+{
+  "site_title": "Mediathek",
+  "root_path": "Q:/",
+  "admin_password": "admin123",
+  "admin_path": "geheim-admin",
+  "default_lang": "de",
+  "log_file": "server.log",
+  "log_level": "INFO",
+  "log_max_bytes": 5242880,
+  "log_backup_count": 3,
+  "translations": {
+    "de": {
+      "site_title": "📁 Mediathek",
+      "selected": "ausgewählt",
+      "select_all": "Alle",
+      "select_none": "Keine",
+      "download_selected": "⬇ Herunterladen",
+      "download": "⬇ Download",
+      "play": "▶ Abspielen"
+    },
+    "ru": {
+      "site_title": "📁 Медиатека",
+      "selected": "выбрано",
+      "select_all": "Все",
+      "select_none": "Сбросить",
+      "download_selected": "⬇ Скачать",
+      "download": "⬇ Скачать",
+      "play": "▶ Воспроизвести"
+    }
+  }
+}
