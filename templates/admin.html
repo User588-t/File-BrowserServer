@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — {{ config.get("site_title", "File Browser") }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f13; color: #e0e0e0; min-height: 100vh; }
+    header { background: #1a1a24; border-bottom: 1px solid #2a2a3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    header h1 { font-size: 1.1rem; font-weight: 600; color: #c084fc; }
+    header a { font-size: 0.82rem; color: #94a3b8; text-decoration: none; }
+    header a:hover { color: #e0e0e0; }
+
+    .login-wrap { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 57px); }
+    .login-box { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 10px; padding: 32px; width: 100%; max-width: 360px; }
+    .login-box h2 { font-size: 1rem; color: #a78bfa; margin-bottom: 20px; }
+    .error { background: #2d1515; border: 1px solid #7f1d1d; color: #fca5a5; padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 16px; }
+    label { display: block; font-size: 0.82rem; color: #888; margin-bottom: 6px; }
+    input[type=password] { width: 100%; background: #0f0f13; border: 1px solid #2a2a3a; color: #e0e0e0; padding: 10px 12px; border-radius: 6px; font-size: 0.9rem; outline: none; }
+    input[type=password]:focus { border-color: #7c3aed; }
+    button { width: 100%; margin-top: 16px; background: #7c3aed; color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
+    button:hover { background: #6d28d9; }
+
+    .container { padding: 24px; }
+    .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat { background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 8px; padding: 14px 20px; }
+    .stat .val { font-size: 1.6rem; font-weight: 700; color: #a78bfa; }
+    .stat .lbl { font-size: 0.75rem; color: #666; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 8px; overflow: hidden; }
+    thead th { text-align: left; padding: 10px 14px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; color: #666; border-bottom: 1px solid #222; background: #16161f; }
+    tbody tr { border-bottom: 1px solid #1e1e2a; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #16161f; }
+    td { padding: 10px 14px; font-size: 0.85rem; vertical-align: top; }
+    .ip { font-family: monospace; color: #94a3b8; }
+    .time { color: #666; font-size: 0.8rem; }
+    .pages { color: #555; font-size: 0.78rem; max-width: 200px; word-break: break-all; }
+    .del-btn { background: #1a0a0a; border: 1px solid #7f1d1d; color: #f87171; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+    .del-btn:hover { background: #7f1d1d; color: #fff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Panel — {{ config.get("site_title", "File Browser") }}</h1>
+    {% if logged_in %}
+      <a href="/{{ config.admin_path }}/logout">Logout</a>
+    {% endif %}
+  </header>
+
+  {% if not logged_in %}
+  <div class="login-wrap">
+    <div class="login-box">
+      <h2>Admin Login</h2>
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      <form method="POST">
+        <label for="pw">Password</label>
+        <input type="password" id="pw" name="password" autofocus required>
+        <button type="submit">Sign in</button>
+      </form>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="container">
+    <div class="stats">
+      <div class="stat">
+        <div class="val">{{ visitors | length }}</div>
+        <div class="lbl">Unique visitors</div>
+      </div>
+      <div class="stat">
+        <div class="val">{{ visitors | sum(attribute='visits') }}</div>
+        <div class="lbl">Total visits</div>
+      </div>
+    </div>
+
+    {% if visitors %}
+    <table>
+      <thead>
+        <tr>
+          <th>IP</th>
+          <th>User Agent</th>
+          <th>First seen</th>
+          <th>Last seen</th>
+          <th>Visits</th>
+          <th>Pages</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in visitors %}
+        <tr>
+          <td class="ip">{{ v.ip }}</td>
+          <td style="max-width:200px; font-size:0.78rem; color:#666;">{{ v.user_agent[:80] }}{% if v.user_agent|length > 80 %}…{% endif %}</td>
+          <td class="time">{{ v.first_seen }}</td>
+          <td class="time">{{ v.last_seen }}</td>
+          <td style="text-align:center; color:#a78bfa;">{{ v.visits }}</td>
+          <td class="pages">{{ v.pages.replace("|", " · ") }}</td>
+          <td>
+            <form method="POST" action="/{{ config.admin_path }}/delete/{{ v.id }}"
+                  onsubmit="return confirm('Delete this visitor?')">
+              <button class="del-btn" type="submit">✕</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p style="color:#444; padding:20px 0;">No visitors yet.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</body>
+</html>

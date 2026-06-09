@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ config.get("site_title", "File Browser") }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f13; color: #e0e0e0; min-height: 100vh; }
+    header { background: #1a1a24; border-bottom: 1px solid #2a2a3a; padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 1.1rem; font-weight: 600; color: #c084fc; }
+    .breadcrumbs { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 12px 24px; font-size: 0.85rem; color: #888; }
+    .breadcrumbs a { color: #a78bfa; text-decoration: none; }
+    .breadcrumbs a:hover { color: #c084fc; }
+    .breadcrumbs span { color: #555; }
+    .container { padding: 0 24px 40px; max-width: 1000px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { text-align: left; padding: 10px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; color: #666; border-bottom: 1px solid #222; }
+    tbody tr { border-bottom: 1px solid #1a1a24; transition: background .12s; }
+    tbody tr:hover { background: #16161f; }
+    td { padding: 10px 12px; font-size: 0.9rem; }
+    .icon { width: 36px; text-align: center; font-size: 1.2rem; }
+    .name a { color: #e0e0e0; text-decoration: none; }
+    .name a:hover { color: #a78bfa; }
+    .name a.folder { color: #fbbf24; }
+    .name a.folder:hover { color: #fcd34d; }
+    .size { color: #666; font-size: 0.82rem; text-align: right; white-space: nowrap; }
+    .actions { text-align: right; white-space: nowrap; }
+    .btn { display: inline-block; padding: 4px 10px; border-radius: 5px; font-size: 0.78rem; text-decoration: none; margin-left: 4px; }
+    .btn-dl  { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+    .btn-dl:hover { background: #334155; color: #e0e0e0; }
+    .player-row td { padding: 0 12px 14px; background: #12121a; }
+    audio { width: 100%; height: 36px; outline: none; }
+    audio::-webkit-media-controls-panel { background: #1a1a2e; }
+    .empty { padding: 40px; text-align: center; color: #444; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ config.get("site_title", "File Browser") }}</h1>
+  </header>
+
+  <div class="breadcrumbs">
+    {% for label, path in breadcrumbs %}
+      {% if not loop.last %}
+        <a href="/browse/{{ path }}">{{ label }}</a>
+        <span>/</span>
+      {% else %}
+        <strong style="color:#e0e0e0">{{ label }}</strong>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="container">
+    {% if entries %}
+    <table>
+      <thead>
+        <tr>
+          <th class="icon"></th>
+          <th>Name</th>
+          <th style="text-align:right">Size</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in entries %}
+        <tr id="row-{{ loop.index }}">
+          <td class="icon">
+            {% if e.type == "folder" %}📁
+            {% elif e.type == "audio" %}🎵
+            {% elif e.type == "image" %}🖼️
+            {% elif e.type == "video" %}🎬
+            {% else %}📄{% endif %}
+          </td>
+          <td class="name">
+            {% if e.is_dir %}
+              <a class="folder" href="/browse/{{ e.rel }}">{{ e.name }}</a>
+            {% elif e.type == "audio" %}
+              <a href="#" onclick="togglePlayer('{{ e.rel }}', {{ loop.index }}); return false;">{{ e.name }}</a>
+            {% else %}
+              <a href="/file/{{ e.rel }}" target="_blank">{{ e.name }}</a>
+            {% endif %}
+          </td>
+          <td class="size">{{ e.size }}</td>
+          <td class="actions">
+            {% if not e.is_dir %}
+              <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% if e.type == "audio" %}
+        <tr class="player-row" id="player-{{ loop.index }}" style="display:none">
+          <td colspan="4">
+            <audio id="audio-{{ loop.index }}" controls preload="none">
+              <source src="/file/{{ e.rel }}">
+            </audio>
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <div class="empty">This folder is empty.</div>
+    {% endif %}
+  </div>
+
+  <script>
+    // Visitor tracking
+    (function () {
+      let id = localStorage.getItem("vid");
+      if (!id) { id = crypto.randomUUID(); localStorage.setItem("vid", id); }
+      fetch("/api/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, page: location.pathname }),
+      });
+    })();
+
+    // Audio player toggle
+    let activeIdx = null;
+    function togglePlayer(rel, idx) {
+      if (activeIdx !== null && activeIdx !== idx) {
+        const prev = document.getElementById("player-" + activeIdx);
+        const prevAudio = document.getElementById("audio-" + activeIdx);
+        if (prev) prev.style.display = "none";
+        if (prevAudio) { prevAudio.pause(); prevAudio.currentTime = 0; }
+      }
+      const row   = document.getElementById("player-" + idx);
+      const audio = document.getElementById("audio-" + idx);
+      if (!row) return;
+      if (row.style.display === "none") {
+        row.style.display = "";
+        audio.play();
+        activeIdx = idx;
+      } else {
+        row.style.display = "none";
+        audio.pause();
+        activeIdx = null;
+      }
+    }
+  </script>
+</body>
+</html>
