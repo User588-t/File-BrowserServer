@@ -215,11 +215,12 @@ async def browse(request: Request, rel: str = ""):
     entries = []
     for item in sorted(path.iterdir(), key=lambda x: (x.is_file(), x.name.lower())):
         entries.append({
-            "name":   item.name,
-            "is_dir": item.is_dir(),
-            "type":   "folder" if item.is_dir() else file_type(item.name),
-            "rel":    str(Path(rel) / item.name).replace("\\", "/"),
-            "size":   f"{item.stat().st_size / 1024 / 1024:.1f} MB" if item.is_file() else "",
+            "name":       item.name,
+            "is_dir":     item.is_dir(),
+            "type":       "folder" if item.is_dir() else file_type(item.name),
+            "rel":        str(Path(rel) / item.name).replace("\\", "/"),
+            "size":       f"{item.stat().st_size / 1024 / 1024:.1f} MB" if item.is_file() else "",
+            "size_bytes": item.stat().st_size if item.is_file() else 0,
         })
 
     parts       = [p for p in rel.split("/") if p]

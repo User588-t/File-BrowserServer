@@ -6,139 +6,453 @@
   <title>{{ config.get("site_title", "File Browser") }}</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f13; color: #e0e0e0; min-height: 100vh; }
-    header { background: #1a1a24; border-bottom: 1px solid #2a2a3a; padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f0f13; color: #e0e0e0; min-height: 100vh;
+      padding-bottom: 72px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #1a1a24; border-bottom: 1px solid #2a2a3a;
+      padding: 14px 24px;
+    }
     header h1 { font-size: 1.1rem; font-weight: 600; color: #c084fc; }
-    .breadcrumbs { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 12px 24px; font-size: 0.85rem; color: #888; }
+
+    /* ── Breadcrumbs ── */
+    .breadcrumbs {
+      display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+      padding: 10px 24px; font-size: 0.85rem; color: #888;
+    }
     .breadcrumbs a { color: #a78bfa; text-decoration: none; }
     .breadcrumbs a:hover { color: #c084fc; }
-    .breadcrumbs span { color: #555; }
-    .container { padding: 0 24px 40px; max-width: 1000px; }
+    .breadcrumbs span { color: #333; }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 24px 14px; flex-wrap: wrap;
+    }
+    #search {
+      background: #1a1a24; border: 1px solid #2a2a3a; color: #e0e0e0;
+      padding: 7px 14px; border-radius: 6px; font-size: 0.88rem;
+      outline: none; width: 260px;
+    }
+    #search:focus { border-color: #7c3aed; }
+    #search::placeholder { color: #444; }
+    .sort-label { font-size: 0.75rem; color: #555; margin-left: 6px; }
+    .sort-btn {
+      background: #1a1a24; border: 1px solid #2a2a3a; color: #777;
+      padding: 5px 12px; border-radius: 5px; font-size: 0.78rem; cursor: pointer;
+    }
+    .sort-btn:hover { background: #22222e; color: #ddd; }
+    .sort-btn.active { border-color: #7c3aed; color: #a78bfa; }
+
+    /* ── File table ── */
+    .container { padding: 0 24px 20px; }
     table { width: 100%; border-collapse: collapse; }
-    thead th { text-align: left; padding: 10px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; color: #666; border-bottom: 1px solid #222; }
-    tbody tr { border-bottom: 1px solid #1a1a24; transition: background .12s; }
-    tbody tr:hover { background: #16161f; }
-    td { padding: 10px 12px; font-size: 0.9rem; }
-    .icon { width: 36px; text-align: center; font-size: 1.2rem; }
-    .name a { color: #e0e0e0; text-decoration: none; }
-    .name a:hover { color: #a78bfa; }
-    .name a.folder { color: #fbbf24; }
-    .name a.folder:hover { color: #fcd34d; }
-    .size { color: #666; font-size: 0.82rem; text-align: right; white-space: nowrap; }
-    .actions { text-align: right; white-space: nowrap; }
-    .btn { display: inline-block; padding: 4px 10px; border-radius: 5px; font-size: 0.78rem; text-decoration: none; margin-left: 4px; }
-    .btn-dl  { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
-    .btn-dl:hover { background: #334155; color: #e0e0e0; }
-    .player-row td { padding: 0 12px 14px; background: #12121a; }
-    audio { width: 100%; height: 36px; outline: none; }
-    audio::-webkit-media-controls-panel { background: #1a1a2e; }
-    .empty { padding: 40px; text-align: center; color: #444; }
+    thead th {
+      text-align: left; padding: 9px 12px;
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: .06em;
+      color: #484860; border-bottom: 1px solid #1e1e2a;
+    }
+    tbody tr.file-row { border-bottom: 1px solid #15151e; transition: background .1s; }
+    tbody tr.file-row:hover { background: #16161f; }
+    tbody tr.file-row.playing { background: #180f2e; }
+    td { padding: 9px 12px; font-size: 0.88rem; }
+    .col-icon { width: 36px; text-align: center; font-size: 1.1rem; }
+    .col-name a { color: #e0e0e0; text-decoration: none; cursor: pointer; }
+    .col-name a:hover { color: #a78bfa; }
+    .col-name a.folder { color: #fbbf24; }
+    .col-name a.folder:hover { color: #fcd34d; }
+    .col-size { color: #4a4a60; font-size: 0.8rem; text-align: right; white-space: nowrap; }
+    .col-type { color: #383850; font-size: 0.78rem; }
+    .col-actions { text-align: right; white-space: nowrap; }
+    .btn-dl {
+      display: inline-block; padding: 3px 9px; border-radius: 4px;
+      font-size: 0.74rem; text-decoration: none;
+      background: #1a2030; color: #7090b0; border: 1px solid #283040;
+    }
+    .btn-dl:hover { background: #283040; color: #e0e0e0; }
+
+    /* ── Inline video row ── */
+    tr.media-row td { padding: 0 12px 12px; background: #0a0a10; }
+    video { width: 100%; max-height: 420px; border-radius: 4px; background: #000; display: block; }
+
+    /* ── Empty state ── */
+    .empty { padding: 60px; text-align: center; color: #2a2a38; }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+    /* ── Image modal ── */
+    #modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9); z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    #modal.open { display: flex; }
+    .modal-inner { max-width: 92vw; max-height: 90vh; text-align: center; }
+    #modal-img {
+      max-width: 100%; max-height: 82vh;
+      border-radius: 6px; object-fit: contain; display: block; margin: 0 auto;
+    }
+    #modal-name { color: #555; font-size: 0.82rem; margin-top: 10px; }
+    .modal-close {
+      position: fixed; top: 14px; right: 18px;
+      background: #222230; border: none; color: #aaa;
+      font-size: 0.9rem; cursor: pointer; padding: 6px 14px; border-radius: 6px;
+    }
+    .modal-close:hover { color: #fff; background: #333; }
+    .modal-nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      background: rgba(0,0,0,0.5); border: none; color: #aaa;
+      font-size: 1.5rem; cursor: pointer; padding: 14px 10px; border-radius: 4px;
+    }
+    .modal-nav:hover { color: #fff; background: rgba(255,255,255,.1); }
+    #modal-prev { left: 10px; }
+    #modal-next { right: 10px; }
+
+    /* ── Bottom audio player ── */
+    #player-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #12121c; border-top: 1px solid #22223a;
+      padding: 9px 20px;
+      display: flex; align-items: center; gap: 14px;
+      z-index: 100;
+      transform: translateY(0); transition: transform .25s ease;
+    }
+    #player-bar.hidden { transform: translateY(100%); }
+    .track-info {
+      display: flex; align-items: center; gap: 8px;
+      flex: 0 0 200px; min-width: 0; overflow: hidden;
+    }
+    #track-icon { font-size: 1rem; flex-shrink: 0; }
+    #track-name {
+      font-size: 0.82rem; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; color: #e0e0e0;
+    }
+    .p-controls { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
+    .p-btn {
+      background: none; border: none; color: #a78bfa;
+      font-size: 1rem; cursor: pointer; padding: 5px 9px; border-radius: 4px; line-height: 1;
+    }
+    .p-btn:hover { background: #22223a; }
+    #p-play { font-size: 1.25rem; }
+    .p-progress { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .p-time { font-size: 0.72rem; color: #484860; min-width: 34px; flex-shrink: 0; }
+    #p-seek { flex: 1; accent-color: #7c3aed; cursor: pointer; height: 3px; }
+    .p-vol { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; flex-shrink: 0; }
+    #p-vol { width: 70px; accent-color: #7c3aed; }
+    .p-close {
+      background: none; border: none; color: #333; cursor: pointer;
+      font-size: 1rem; padding: 4px 6px; flex-shrink: 0;
+    }
+    .p-close:hover { color: #aaa; }
+    audio { display: none; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>{{ config.get("site_title", "File Browser") }}</h1>
-  </header>
 
-  <div class="breadcrumbs">
-    {% for label, path in breadcrumbs %}
-      {% if not loop.last %}
-        <a href="/browse/{{ path }}">{{ label }}</a>
-        <span>/</span>
-      {% else %}
-        <strong style="color:#e0e0e0">{{ label }}</strong>
-      {% endif %}
-    {% endfor %}
-  </div>
+<header>
+  <h1>{{ config.get("site_title", "File Browser") }}</h1>
+</header>
 
-  <div class="container">
-    {% if entries %}
-    <table>
-      <thead>
-        <tr>
-          <th class="icon"></th>
-          <th>Name</th>
-          <th style="text-align:right">Size</th>
-          <th style="text-align:right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for e in entries %}
-        <tr id="row-{{ loop.index }}">
-          <td class="icon">
-            {% if e.type == "folder" %}📁
-            {% elif e.type == "audio" %}🎵
-            {% elif e.type == "image" %}🖼️
-            {% elif e.type == "video" %}🎬
-            {% else %}📄{% endif %}
-          </td>
-          <td class="name">
-            {% if e.is_dir %}
-              <a class="folder" href="/browse/{{ e.rel }}">{{ e.name }}</a>
-            {% elif e.type == "audio" %}
-              <a href="#" onclick="togglePlayer('{{ e.rel }}', {{ loop.index }}); return false;">{{ e.name }}</a>
-            {% else %}
-              <a href="/file/{{ e.rel }}" target="_blank">{{ e.name }}</a>
-            {% endif %}
-          </td>
-          <td class="size">{{ e.size }}</td>
-          <td class="actions">
-            {% if not e.is_dir %}
-              <a class="btn btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
-            {% endif %}
-          </td>
-        </tr>
-        {% if e.type == "audio" %}
-        <tr class="player-row" id="player-{{ loop.index }}" style="display:none">
-          <td colspan="4">
-            <audio id="audio-{{ loop.index }}" controls preload="none">
-              <source src="/file/{{ e.rel }}">
-            </audio>
-          </td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="breadcrumbs">
+  {% for label, path in breadcrumbs %}
+    {% if not loop.last %}
+      <a href="/browse/{{ path }}">{{ label }}</a><span>/</span>
     {% else %}
-      <div class="empty">This folder is empty.</div>
+      <strong style="color:#ddd">{{ label }}</strong>
     {% endif %}
+  {% endfor %}
+</div>
+
+<div class="controls">
+  <input type="search" id="search" placeholder="🔍  Search files…" oninput="filterFiles()">
+  <span class="sort-label">Sort:</span>
+  <button class="sort-btn active" data-sort="name" data-label="Name" onclick="sortBy('name')">Name ↕</button>
+  <button class="sort-btn" data-sort="size" data-label="Size" onclick="sortBy('size')">Size ↕</button>
+  <button class="sort-btn" data-sort="type" data-label="Type" onclick="sortBy('type')">Type ↕</button>
+</div>
+
+<div class="container">
+  {% if entries %}
+  <table id="file-table">
+    <thead>
+      <tr>
+        <th class="col-icon"></th>
+        <th>Name</th>
+        <th style="text-align:right">Size</th>
+        <th>Type</th>
+        <th style="text-align:right">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="file-tbody">
+      {% for e in entries %}
+      <tr class="file-row"
+          id="row-{{ loop.index }}"
+          data-idx="{{ loop.index }}"
+          data-ei="{{ loop.index0 }}"
+          data-name="{{ e.name }}"
+          data-size="{{ e.size_bytes }}"
+          data-type="{{ e.type }}"
+          data-rel="{{ e.rel }}">
+        <td class="col-icon">
+          {% if e.type == "folder" %}📁
+          {% elif e.type == "audio" %}🎵
+          {% elif e.type == "image" %}🖼️
+          {% elif e.type == "video" %}🎬
+          {% else %}📄{% endif %}
+        </td>
+        <td class="col-name">
+          {% if e.is_dir %}
+            <a class="folder" href="/browse/{{ e.rel }}">{{ e.name }}</a>
+          {% elif e.type == "audio" %}
+            <a onclick="playAudioEntry({{ loop.index0 }})">{{ e.name }}</a>
+          {% elif e.type == "video" %}
+            <a onclick="toggleVideo({{ loop.index }})">{{ e.name }}</a>
+          {% elif e.type == "image" %}
+            <a onclick="openPreview({{ loop.index0 }})">{{ e.name }}</a>
+          {% else %}
+            <a href="/file/{{ e.rel }}" target="_blank">{{ e.name }}</a>
+          {% endif %}
+        </td>
+        <td class="col-size">{{ e.size }}</td>
+        <td class="col-type">{{ e.type }}</td>
+        <td class="col-actions">
+          {% if not e.is_dir %}
+            <a class="btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% if e.type == "video" %}
+      <tr class="media-row" id="player-{{ loop.index }}" style="display:none">
+        <td colspan="5">
+          <video id="video-{{ loop.index }}" controls preload="none">
+            <source src="/file/{{ e.rel }}">
+          </video>
+        </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <div class="empty-icon">📂</div>
+    This folder is empty.
   </div>
+  {% endif %}
+</div>
 
-  <script>
-    // Visitor tracking
-    (function () {
-      let id = localStorage.getItem("vid");
-      if (!id) { id = crypto.randomUUID(); localStorage.setItem("vid", id); }
-      fetch("/api/visit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, page: location.pathname }),
-      });
-    })();
+<!-- ── Image modal ── -->
+<div id="modal" onclick="closeModal()">
+  <div class="modal-inner" onclick="event.stopPropagation()">
+    <img id="modal-img" src="" alt="">
+    <div id="modal-name"></div>
+  </div>
+  <button class="modal-close" onclick="closeModal()">✕ Close</button>
+  <button class="modal-nav" id="modal-prev" onclick="event.stopPropagation(); modalStep(-1)">‹</button>
+  <button class="modal-nav" id="modal-next" onclick="event.stopPropagation(); modalStep(1)">›</button>
+</div>
 
-    // Audio player toggle
-    let activeIdx = null;
-    function togglePlayer(rel, idx) {
-      if (activeIdx !== null && activeIdx !== idx) {
-        const prev = document.getElementById("player-" + activeIdx);
-        const prevAudio = document.getElementById("audio-" + activeIdx);
-        if (prev) prev.style.display = "none";
-        if (prevAudio) { prevAudio.pause(); prevAudio.currentTime = 0; }
+<!-- ── Bottom audio player ── -->
+<div id="player-bar" class="hidden">
+  <div class="track-info">
+    <span id="track-icon">🎵</span>
+    <span id="track-name">No track</span>
+  </div>
+  <div class="p-controls">
+    <button class="p-btn" onclick="playPrev()" title="Previous">⏮</button>
+    <button class="p-btn" id="p-play" onclick="togglePlay()">▶</button>
+    <button class="p-btn" onclick="playNext()" title="Next">⏭</button>
+  </div>
+  <div class="p-progress">
+    <span class="p-time" id="p-cur">0:00</span>
+    <input type="range" id="p-seek" value="0" min="0" max="100" step="0.1">
+    <span class="p-time" id="p-dur">0:00</span>
+  </div>
+  <div class="p-vol">
+    🔊 <input type="range" id="p-vol" value="80" min="0" max="100">
+  </div>
+  <button class="p-close" onclick="closePlayer()">✕</button>
+  <audio id="main-audio"></audio>
+</div>
+
+<script>
+  // ── Data (safe JSON from server) ──────────────────────────
+  const ENTRIES  = {{ entries | tojson }};
+  const playlist = ENTRIES.filter(e => e.type === 'audio');
+  const images   = ENTRIES.filter(e => e.type === 'image');
+  let currentTrack = -1;
+  let currentImage = -1;
+
+  // ── Visitor tracking ──────────────────────────────────────
+  (function () {
+    let id = localStorage.getItem('vid');
+    if (!id) { id = crypto.randomUUID(); localStorage.setItem('vid', id); }
+    fetch('/api/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, page: location.pathname }),
+    });
+  })();
+
+  // ── Search ────────────────────────────────────────────────
+  function filterFiles() {
+    const q = document.getElementById('search').value.toLowerCase().trim();
+    document.querySelectorAll('#file-tbody tr.file-row').forEach(row => {
+      const visible = !q || row.dataset.name.toLowerCase().includes(q);
+      row.style.display = visible ? '' : 'none';
+      const pr = document.getElementById('player-' + row.dataset.idx);
+      if (pr && !visible) pr.style.display = 'none';
+    });
+  }
+
+  // ── Sort ──────────────────────────────────────────────────
+  let sortCol = 'name', sortDir = 1;
+
+  function sortBy(col) {
+    if (sortCol === col) sortDir = -sortDir;
+    else { sortCol = col; sortDir = 1; }
+
+    const tbody = document.getElementById('file-tbody');
+    const rows  = [...tbody.querySelectorAll('tr.file-row')];
+
+    rows.sort((a, b) => {
+      // folders always first
+      if (a.dataset.type === 'folder' && b.dataset.type !== 'folder') return -1;
+      if (a.dataset.type !== 'folder' && b.dataset.type === 'folder') return  1;
+      if (col === 'size')
+        return (parseInt(a.dataset.size) - parseInt(b.dataset.size)) * sortDir;
+      return a.dataset[col].localeCompare(b.dataset[col]) * sortDir;
+    });
+
+    rows.forEach(row => {
+      tbody.appendChild(row);
+      const pr = document.getElementById('player-' + row.dataset.idx);
+      if (pr) tbody.appendChild(pr);
+    });
+
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      const active = btn.dataset.sort === sortCol;
+      btn.classList.toggle('active', active);
+      btn.textContent = btn.dataset.label + (active ? (sortDir === 1 ? ' ↑' : ' ↓') : ' ↕');
+    });
+  }
+
+  // ── Audio player ──────────────────────────────────────────
+  const audio = document.getElementById('main-audio');
+
+  function playAudioEntry(entryIdx) {
+    const entry = ENTRIES[entryIdx];
+    const pi    = playlist.findIndex(t => t.rel === entry.rel);
+    if (pi !== -1) loadTrack(pi);
+  }
+
+  function loadTrack(pi) {
+    if (pi < 0 || pi >= playlist.length) return;
+    currentTrack = pi;
+    const t = playlist[pi];
+    audio.src = '/file/' + t.rel;
+    document.getElementById('track-name').textContent = t.name;
+    document.getElementById('player-bar').classList.remove('hidden');
+    document.getElementById('p-play').textContent = '⏸';
+    audio.play();
+    document.querySelectorAll('.file-row').forEach(r => r.classList.remove('playing'));
+    document.querySelector(`[data-rel="${CSS.escape(t.rel)}"]`)?.classList.add('playing');
+  }
+
+  function togglePlay() {
+    if (audio.paused) { audio.play();  document.getElementById('p-play').textContent = '⏸'; }
+    else              { audio.pause(); document.getElementById('p-play').textContent = '▶'; }
+  }
+  function playPrev() { loadTrack(currentTrack - 1); }
+  function playNext() { loadTrack(currentTrack + 1); }
+
+  function closePlayer() {
+    audio.pause(); audio.src = '';
+    document.getElementById('player-bar').classList.add('hidden');
+    document.querySelectorAll('.file-row').forEach(r => r.classList.remove('playing'));
+    currentTrack = -1;
+  }
+
+  audio.addEventListener('ended', () => {
+    if (currentTrack < playlist.length - 1) playNext();
+    else document.getElementById('p-play').textContent = '▶';
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    document.getElementById('p-seek').value = (audio.currentTime / audio.duration) * 100;
+    document.getElementById('p-cur').textContent = fmt(audio.currentTime);
+    document.getElementById('p-dur').textContent = fmt(audio.duration);
+  });
+
+  document.getElementById('p-seek').addEventListener('input', e => {
+    if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration;
+  });
+  document.getElementById('p-vol').addEventListener('input', e => {
+    audio.volume = e.target.value / 100;
+  });
+  audio.volume = 0.8;
+
+  function fmt(s) {
+    return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
+  }
+
+  // ── Video (inline) ────────────────────────────────────────
+  let activeVideo = null;
+
+  function toggleVideo(idx) {
+    const row = document.getElementById('player-' + idx);
+    const vid = document.getElementById('video-' + idx);
+    if (!row) return;
+    if (row.style.display === 'none') {
+      if (activeVideo && activeVideo !== vid) {
+        activeVideo.pause();
+        activeVideo.closest('tr').style.display = 'none';
       }
-      const row   = document.getElementById("player-" + idx);
-      const audio = document.getElementById("audio-" + idx);
-      if (!row) return;
-      if (row.style.display === "none") {
-        row.style.display = "";
-        audio.play();
-        activeIdx = idx;
-      } else {
-        row.style.display = "none";
-        audio.pause();
-        activeIdx = null;
-      }
+      row.style.display = '';
+      vid.play();
+      activeVideo = vid;
+    } else {
+      row.style.display = 'none';
+      vid.pause();
+      activeVideo = null;
     }
-  </script>
+  }
+
+  // ── Image preview with prev/next ──────────────────────────
+  function openPreview(entryIdx) {
+    const entry = ENTRIES[entryIdx];
+    const ii    = images.findIndex(i => i.rel === entry.rel);
+    if (ii !== -1) showImage(ii);
+  }
+
+  function showImage(ii) {
+    if (ii < 0 || ii >= images.length) return;
+    currentImage = ii;
+    const img = images[ii];
+    document.getElementById('modal-img').src = '/file/' + img.rel;
+    document.getElementById('modal-name').textContent = img.name;
+    document.getElementById('modal').classList.add('open');
+    document.getElementById('modal-prev').style.visibility = ii > 0 ? '' : 'hidden';
+    document.getElementById('modal-next').style.visibility = ii < images.length - 1 ? '' : 'hidden';
+  }
+
+  function modalStep(dir) { showImage(currentImage + dir); }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.getElementById('modal-img').src = '';
+    currentImage = -1;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape')      closeModal();
+    if (e.key === 'ArrowLeft')   modalStep(-1);
+    if (e.key === 'ArrowRight')  modalStep(1);
+  });
+</script>
 </body>
 </html>
