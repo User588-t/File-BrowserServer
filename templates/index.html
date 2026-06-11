@@ -11,24 +11,18 @@
       background: #0f0f13; color: #e0e0e0; min-height: 100vh;
       padding-bottom: 72px;
     }
-
-    /* ── Header ── */
     header {
       background: #1a1a24; border-bottom: 1px solid #2a2a3a;
       padding: 14px 24px;
     }
     header h1 { font-size: 1.1rem; font-weight: 600; color: #c084fc; }
-
-    /* ── Breadcrumbs ── */
     .breadcrumbs {
       display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
       padding: 10px 24px; font-size: 0.85rem; color: #888;
     }
-    .breadcrumbs a { color: #a78bfa; text-decoration: none; }
+    .breadcrumbs a { color: #a78bfa; text-decoration: none; cursor: pointer; }
     .breadcrumbs a:hover { color: #c084fc; }
     .breadcrumbs span { color: #333; }
-
-    /* ── Controls ── */
     .controls {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 24px 14px; flex-wrap: wrap;
@@ -47,8 +41,6 @@
     }
     .sort-btn:hover { background: #22222e; color: #ddd; }
     .sort-btn.active { border-color: #7c3aed; color: #a78bfa; }
-
-    /* ── File table ── */
     .container { padding: 0 24px 20px; }
     table { width: 100%; border-collapse: collapse; }
     thead th {
@@ -65,6 +57,8 @@
     .col-name a:hover { color: #a78bfa; }
     .col-name a.folder { color: #fbbf24; }
     .col-name a.folder:hover { color: #fcd34d; }
+    .col-name a.parent { color: #888; font-style: italic; }
+    .col-name a.parent:hover { color: #bbb; }
     .col-size { color: #4a4a60; font-size: 0.8rem; text-align: right; white-space: nowrap; }
     .col-type { color: #383850; font-size: 0.78rem; }
     .col-actions { text-align: right; white-space: nowrap; }
@@ -74,16 +68,12 @@
       background: #1a2030; color: #7090b0; border: 1px solid #283040;
     }
     .btn-dl:hover { background: #283040; color: #e0e0e0; }
-
-    /* ── Inline video row ── */
     tr.media-row td { padding: 0 12px 12px; background: #0a0a10; }
     video { width: 100%; max-height: 420px; border-radius: 4px; background: #000; display: block; }
-
-    /* ── Empty state ── */
     .empty { padding: 60px; text-align: center; color: #2a2a38; }
     .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
 
-    /* ── Image modal ── */
+    /* Image modal */
     #modal {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.9); z-index: 200;
@@ -92,8 +82,8 @@
     #modal.open { display: flex; }
     .modal-inner { max-width: 92vw; max-height: 90vh; text-align: center; }
     #modal-img {
-      max-width: 100%; max-height: 82vh;
-      border-radius: 6px; object-fit: contain; display: block; margin: 0 auto;
+      max-width: 100%; max-height: 82vh; border-radius: 6px;
+      object-fit: contain; display: block; margin: 0 auto;
     }
     #modal-name { color: #555; font-size: 0.82rem; margin-top: 10px; }
     .modal-close {
@@ -111,21 +101,18 @@
     #modal-prev { left: 10px; }
     #modal-next { right: 10px; }
 
-    /* ── Bottom audio player ── */
+    /* Audio player bar */
     #player-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: #12121c; border-top: 1px solid #22223a;
-      padding: 9px 20px;
-      display: flex; align-items: center; gap: 14px;
-      z-index: 100;
-      transform: translateY(0); transition: transform .25s ease;
+      padding: 9px 20px; display: flex; align-items: center; gap: 14px;
+      z-index: 100; transform: translateY(100%); transition: transform .25s ease;
     }
-    #player-bar.hidden { transform: translateY(100%); }
+    #player-bar.visible { transform: translateY(0); }
     .track-info {
       display: flex; align-items: center; gap: 8px;
-      flex: 0 0 200px; min-width: 0; overflow: hidden;
+      flex: 0 0 210px; min-width: 0; overflow: hidden;
     }
-    #track-icon { font-size: 1rem; flex-shrink: 0; }
     #track-name {
       font-size: 0.82rem; white-space: nowrap; overflow: hidden;
       text-overflow: ellipsis; color: #e0e0e0;
@@ -133,13 +120,14 @@
     .p-controls { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
     .p-btn {
       background: none; border: none; color: #a78bfa;
-      font-size: 1rem; cursor: pointer; padding: 5px 9px; border-radius: 4px; line-height: 1;
+      font-size: 1rem; cursor: pointer; padding: 5px 9px;
+      border-radius: 4px; line-height: 1;
     }
     .p-btn:hover { background: #22223a; }
     #p-play { font-size: 1.25rem; }
     .p-progress { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
     .p-time { font-size: 0.72rem; color: #484860; min-width: 34px; flex-shrink: 0; }
-    #p-seek { flex: 1; accent-color: #7c3aed; cursor: pointer; height: 3px; }
+    #p-seek { flex: 1; accent-color: #7c3aed; cursor: pointer; }
     .p-vol { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; flex-shrink: 0; }
     #p-vol { width: 70px; accent-color: #7c3aed; }
     .p-close {
@@ -147,7 +135,7 @@
       font-size: 1rem; padding: 4px 6px; flex-shrink: 0;
     }
     .p-close:hover { color: #aaa; }
-    audio { display: none; }
+    #main-audio { display: none; }
   </style>
 </head>
 <body>
@@ -156,27 +144,18 @@
   <h1>{{ config.get("site_title", "File Browser") }}</h1>
 </header>
 
-<div class="breadcrumbs">
-  {% for label, path in breadcrumbs %}
-    {% if not loop.last %}
-      <a href="/browse/{{ path }}">{{ label }}</a><span>/</span>
-    {% else %}
-      <strong style="color:#ddd">{{ label }}</strong>
-    {% endif %}
-  {% endfor %}
-</div>
+<div class="breadcrumbs" id="breadcrumbs"></div>
 
 <div class="controls">
   <input type="search" id="search" placeholder="🔍  Search files…" oninput="filterFiles()">
   <span class="sort-label">Sort:</span>
-  <button class="sort-btn active" data-sort="name" data-label="Name" onclick="sortBy('name')">Name ↕</button>
-  <button class="sort-btn" data-sort="size" data-label="Size" onclick="sortBy('size')">Size ↕</button>
-  <button class="sort-btn" data-sort="type" data-label="Type" onclick="sortBy('type')">Type ↕</button>
+  <button class="sort-btn active" data-sort="name" data-label="Name" onclick="sortBy('name')">Name ↑</button>
+  <button class="sort-btn" data-sort="size" data-label="Size"  onclick="sortBy('size')">Size ↕</button>
+  <button class="sort-btn" data-sort="type" data-label="Type"  onclick="sortBy('type')">Type ↕</button>
 </div>
 
 <div class="container">
-  {% if entries %}
-  <table id="file-table">
+  <table id="file-table" style="display:none">
     <thead>
       <tr>
         <th class="col-icon"></th>
@@ -186,79 +165,29 @@
         <th style="text-align:right">Actions</th>
       </tr>
     </thead>
-    <tbody id="file-tbody">
-      {% for e in entries %}
-      <tr class="file-row"
-          id="row-{{ loop.index }}"
-          data-idx="{{ loop.index }}"
-          data-ei="{{ loop.index0 }}"
-          data-name="{{ e.name }}"
-          data-size="{{ e.size_bytes }}"
-          data-type="{{ e.type }}"
-          data-rel="{{ e.rel }}">
-        <td class="col-icon">
-          {% if e.type == "folder" %}📁
-          {% elif e.type == "audio" %}🎵
-          {% elif e.type == "image" %}🖼️
-          {% elif e.type == "video" %}🎬
-          {% else %}📄{% endif %}
-        </td>
-        <td class="col-name">
-          {% if e.is_dir %}
-            <a class="folder" href="/browse/{{ e.rel }}">{{ e.name }}</a>
-          {% elif e.type == "audio" %}
-            <a onclick="playAudioEntry({{ loop.index0 }})">{{ e.name }}</a>
-          {% elif e.type == "video" %}
-            <a onclick="toggleVideo({{ loop.index }})">{{ e.name }}</a>
-          {% elif e.type == "image" %}
-            <a onclick="openPreview({{ loop.index0 }})">{{ e.name }}</a>
-          {% else %}
-            <a href="/file/{{ e.rel }}" target="_blank">{{ e.name }}</a>
-          {% endif %}
-        </td>
-        <td class="col-size">{{ e.size }}</td>
-        <td class="col-type">{{ e.type }}</td>
-        <td class="col-actions">
-          {% if not e.is_dir %}
-            <a class="btn-dl" href="/download/{{ e.rel }}">⬇ Download</a>
-          {% endif %}
-        </td>
-      </tr>
-      {% if e.type == "video" %}
-      <tr class="media-row" id="player-{{ loop.index }}" style="display:none">
-        <td colspan="5">
-          <video id="video-{{ loop.index }}" controls preload="none">
-            <source src="/file/{{ e.rel }}">
-          </video>
-        </td>
-      </tr>
-      {% endif %}
-      {% endfor %}
-    </tbody>
+    <tbody id="file-tbody"></tbody>
   </table>
-  {% else %}
-  <div class="empty">
+  <div id="empty-state" class="empty" style="display:none">
     <div class="empty-icon">📂</div>
     This folder is empty.
   </div>
-  {% endif %}
 </div>
 
-<!-- ── Image modal ── -->
+<!-- Image modal -->
 <div id="modal" onclick="closeModal()">
   <div class="modal-inner" onclick="event.stopPropagation()">
     <img id="modal-img" src="" alt="">
     <div id="modal-name"></div>
   </div>
   <button class="modal-close" onclick="closeModal()">✕ Close</button>
-  <button class="modal-nav" id="modal-prev" onclick="event.stopPropagation(); modalStep(-1)">‹</button>
-  <button class="modal-nav" id="modal-next" onclick="event.stopPropagation(); modalStep(1)">›</button>
+  <button class="modal-nav" id="modal-prev" onclick="event.stopPropagation();modalStep(-1)">‹</button>
+  <button class="modal-nav" id="modal-next" onclick="event.stopPropagation();modalStep(1)">›</button>
 </div>
 
-<!-- ── Bottom audio player ── -->
-<div id="player-bar" class="hidden">
+<!-- Audio player — persists across folder navigation -->
+<div id="player-bar">
   <div class="track-info">
-    <span id="track-icon">🎵</span>
+    <span style="flex-shrink:0">🎵</span>
     <span id="track-name">No track</span>
   </div>
   <div class="p-controls">
@@ -271,81 +200,198 @@
     <input type="range" id="p-seek" value="0" min="0" max="100" step="0.1">
     <span class="p-time" id="p-dur">0:00</span>
   </div>
-  <div class="p-vol">
-    🔊 <input type="range" id="p-vol" value="80" min="0" max="100">
-  </div>
+  <div class="p-vol">🔊 <input type="range" id="p-vol" value="80" min="0" max="100"></div>
   <button class="p-close" onclick="closePlayer()">✕</button>
   <audio id="main-audio"></audio>
 </div>
 
 <script>
-  // ── Data (safe JSON from server) ──────────────────────────
-  const ENTRIES  = {{ entries | tojson }};
-  const playlist = ENTRIES.filter(e => e.type === 'audio');
-  const images   = ENTRIES.filter(e => e.type === 'image');
+  // ── Initial data from server ──────────────────────────────
+  let ENTRIES    = {{ entries | tojson }};
+  let currentRel = {{ rel | tojson }};
+  const CONFIG   = {{ config | tojson }};
+
+  // ── Playlists (global — survive folder navigation) ────────
+  let playlist     = [];
+  let imgList      = [];
   let currentTrack = -1;
   let currentImage = -1;
+  let sortCol      = "name";
+  let sortDir      = 1;
+
+  // ── Boot ──────────────────────────────────────────────────
+  applyEntries(ENTRIES, currentRel, false);
+  window.addEventListener("popstate", e => loadFolder(e.state?.rel ?? "", false));
 
   // ── Visitor tracking ──────────────────────────────────────
   (function () {
-    let id = localStorage.getItem('vid');
-    if (!id) { id = crypto.randomUUID(); localStorage.setItem('vid', id); }
-    fetch('/api/visit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    let id = localStorage.getItem("vid");
+    if (!id) { id = crypto.randomUUID(); localStorage.setItem("vid", id); }
+    fetch("/api/visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, page: location.pathname }),
     });
   })();
 
+  // ── AJAX folder navigation ────────────────────────────────
+  async function loadFolder(rel, push = true) {
+    const url = "/api/browse" + (rel ? "/" + rel : "");
+    const resp = await fetch(url);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (push) history.pushState({ rel: data.rel }, "", rel ? "/browse/" + rel : "/");
+    applyEntries(data.entries, data.rel, true);
+  }
+
+  function applyEntries(entries, rel, resetSort) {
+    ENTRIES    = entries;
+    currentRel = rel;
+    playlist   = entries.filter(e => e.type === "audio");
+    imgList    = entries.filter(e => e.type === "image");
+
+    if (resetSort) {
+      sortCol = "name"; sortDir = 1;
+      document.querySelectorAll(".sort-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.sort === "name");
+        b.textContent = b.dataset.label + (b.dataset.sort === "name" ? " ↑" : " ↕");
+      });
+    }
+    document.getElementById("search").value = "";
+    renderBreadcrumbs(rel);
+    renderTable(entries);
+  }
+
+  // ── Breadcrumbs ───────────────────────────────────────────
+  function renderBreadcrumbs(rel) {
+    const parts = rel ? rel.split("/") : [];
+    let html = `<a onclick="loadFolder('')">Root</a>`;
+    parts.forEach((p, i) => {
+      const fp = parts.slice(0, i + 1).join("/");
+      html += `<span>/</span>`;
+      html += (i === parts.length - 1)
+        ? `<strong style="color:#ddd">${h(p)}</strong>`
+        : `<a onclick="loadFolder('${h(fp)}')">${h(p)}</a>`;
+    });
+    document.getElementById("breadcrumbs").innerHTML = html;
+  }
+
+  // ── Render table ──────────────────────────────────────────
+  const ICONS = { folder:"📁", audio:"🎵", image:"🖼️", video:"🎬", file:"📄" };
+
+  function renderTable(entries) {
+    const tbody = document.getElementById("file-tbody");
+    const table = document.getElementById("file-table");
+    const empty = document.getElementById("empty-state");
+
+    // Hide video players that may be open
+    tbody.querySelectorAll("tr.media-row").forEach(r => {
+      r.querySelector("video")?.pause();
+    });
+
+    const real = entries.filter(e => e.name !== "..");
+    if (!real.length && !entries.find(e => e.name === "..")) {
+      table.style.display = "none"; empty.style.display = ""; return;
+    }
+    empty.style.display = "none"; table.style.display = "";
+    tbody.innerHTML = entries.map((e, i) => makeRow(e, i + 1)).join("");
+  }
+
+  function makeRow(e, idx) {
+    const icon = e.name === ".." ? "⬆️" : (ICONS[e.type] || "📄");
+    let link;
+    if (e.name === "..") {
+      link = `<a class="parent" onclick="loadFolder('${h(e.rel)}')">.. (parent folder)</a>`;
+    } else if (e.is_dir) {
+      link = `<a class="folder" onclick="loadFolder('${h(e.rel)}')">${h(e.name)}</a>`;
+    } else if (e.type === "audio") {
+      link = `<a onclick="playByRel('${h(e.rel)}')">${h(e.name)}</a>`;
+    } else if (e.type === "video") {
+      link = `<a onclick="toggleVideo(${idx})">${h(e.name)}</a>`;
+    } else if (e.type === "image") {
+      link = `<a onclick="openPreviewByRel('${h(e.rel)}')">${h(e.name)}</a>`;
+    } else {
+      link = `<a href="/file/${h(e.rel)}" target="_blank">${h(e.name)}</a>`;
+    }
+
+    const dl = (!e.is_dir && e.name !== "..")
+      ? `<a class="btn-dl" href="/download/${h(e.rel)}">⬇ Download</a>`
+      : "";
+
+    let html = `
+    <tr class="file-row" id="row-${idx}"
+        data-idx="${idx}" data-name="${h(e.name)}"
+        data-size="${e.size_bytes}" data-type="${e.type}" data-rel="${h(e.rel)}"
+        ${e.name === ".." ? 'data-parent="1"' : ""}>
+      <td class="col-icon">${icon}</td>
+      <td class="col-name">${link}</td>
+      <td class="col-size">${e.size}</td>
+      <td class="col-type">${e.name === ".." ? "" : e.type}</td>
+      <td class="col-actions">${dl}</td>
+    </tr>`;
+
+    if (e.type === "video" && e.name !== "..") {
+      html += `
+    <tr class="media-row" id="player-${idx}" style="display:none">
+      <td colspan="5">
+        <video id="video-${idx}" controls preload="none">
+          <source src="/file/${h(e.rel)}">
+        </video>
+      </td>
+    </tr>`;
+    }
+    return html;
+  }
+
   // ── Search ────────────────────────────────────────────────
   function filterFiles() {
-    const q = document.getElementById('search').value.toLowerCase().trim();
-    document.querySelectorAll('#file-tbody tr.file-row').forEach(row => {
-      const visible = !q || row.dataset.name.toLowerCase().includes(q);
-      row.style.display = visible ? '' : 'none';
-      const pr = document.getElementById('player-' + row.dataset.idx);
-      if (pr && !visible) pr.style.display = 'none';
+    const q = document.getElementById("search").value.toLowerCase().trim();
+    document.querySelectorAll("#file-tbody tr.file-row").forEach(row => {
+      if (row.dataset.parent) return; // always show ..
+      const show = !q || row.dataset.name.toLowerCase().includes(q);
+      row.style.display = show ? "" : "none";
+      const pr = document.getElementById("player-" + row.dataset.idx);
+      if (pr && !show) pr.style.display = "none";
     });
   }
 
   // ── Sort ──────────────────────────────────────────────────
-  let sortCol = 'name', sortDir = 1;
-
   function sortBy(col) {
     if (sortCol === col) sortDir = -sortDir;
     else { sortCol = col; sortDir = 1; }
 
-    const tbody = document.getElementById('file-tbody');
-    const rows  = [...tbody.querySelectorAll('tr.file-row')];
+    const tbody  = document.getElementById("file-tbody");
+    const allRows = [...tbody.querySelectorAll("tr.file-row")];
+    const parent  = allRows.find(r => r.dataset.parent);
+    const rows    = allRows.filter(r => !r.dataset.parent);
 
     rows.sort((a, b) => {
-      // folders always first
-      if (a.dataset.type === 'folder' && b.dataset.type !== 'folder') return -1;
-      if (a.dataset.type !== 'folder' && b.dataset.type === 'folder') return  1;
-      if (col === 'size')
-        return (parseInt(a.dataset.size) - parseInt(b.dataset.size)) * sortDir;
+      if (a.dataset.type === "folder" && b.dataset.type !== "folder") return -1;
+      if (a.dataset.type !== "folder" && b.dataset.type === "folder") return 1;
+      if (col === "size") return (parseInt(a.dataset.size) - parseInt(b.dataset.size)) * sortDir;
       return a.dataset[col].localeCompare(b.dataset[col]) * sortDir;
     });
 
+    if (parent) tbody.appendChild(parent); // .. always first
     rows.forEach(row => {
       tbody.appendChild(row);
-      const pr = document.getElementById('player-' + row.dataset.idx);
+      const pr = document.getElementById("player-" + row.dataset.idx);
       if (pr) tbody.appendChild(pr);
     });
 
-    document.querySelectorAll('.sort-btn').forEach(btn => {
+    document.querySelectorAll(".sort-btn").forEach(btn => {
       const active = btn.dataset.sort === sortCol;
-      btn.classList.toggle('active', active);
-      btn.textContent = btn.dataset.label + (active ? (sortDir === 1 ? ' ↑' : ' ↓') : ' ↕');
+      btn.classList.toggle("active", active);
+      btn.textContent = btn.dataset.label + (active ? (sortDir === 1 ? " ↑" : " ↓") : " ↕");
     });
   }
 
   // ── Audio player ──────────────────────────────────────────
-  const audio = document.getElementById('main-audio');
+  const audio = document.getElementById("main-audio");
 
-  function playAudioEntry(entryIdx) {
-    const entry = ENTRIES[entryIdx];
-    const pi    = playlist.findIndex(t => t.rel === entry.rel);
+  function playByRel(rel) {
+    // Search in global ENTRIES first, then current playlist
+    const pi = playlist.findIndex(t => t.rel === rel);
     if (pi !== -1) loadTrack(pi);
   }
 
@@ -353,106 +399,91 @@
     if (pi < 0 || pi >= playlist.length) return;
     currentTrack = pi;
     const t = playlist[pi];
-    audio.src = '/file/' + t.rel;
-    document.getElementById('track-name').textContent = t.name;
-    document.getElementById('player-bar').classList.remove('hidden');
-    document.getElementById('p-play').textContent = '⏸';
+    audio.src = "/file/" + t.rel;
+    document.getElementById("track-name").textContent = t.name;
+    document.getElementById("player-bar").classList.add("visible");
+    document.getElementById("p-play").textContent = "⏸";
     audio.play();
-    document.querySelectorAll('.file-row').forEach(r => r.classList.remove('playing'));
-    document.querySelector(`[data-rel="${CSS.escape(t.rel)}"]`)?.classList.add('playing');
+    document.querySelectorAll(".file-row").forEach(r => r.classList.remove("playing"));
+    document.querySelector(`[data-rel="${CSS.escape(t.rel)}"]`)?.classList.add("playing");
   }
 
   function togglePlay() {
-    if (audio.paused) { audio.play();  document.getElementById('p-play').textContent = '⏸'; }
-    else              { audio.pause(); document.getElementById('p-play').textContent = '▶'; }
+    if (audio.paused) { audio.play();  document.getElementById("p-play").textContent = "⏸"; }
+    else              { audio.pause(); document.getElementById("p-play").textContent = "▶"; }
   }
   function playPrev() { loadTrack(currentTrack - 1); }
   function playNext() { loadTrack(currentTrack + 1); }
-
   function closePlayer() {
-    audio.pause(); audio.src = '';
-    document.getElementById('player-bar').classList.add('hidden');
-    document.querySelectorAll('.file-row').forEach(r => r.classList.remove('playing'));
+    audio.pause(); audio.src = "";
+    document.getElementById("player-bar").classList.remove("visible");
+    document.querySelectorAll(".file-row").forEach(r => r.classList.remove("playing"));
     currentTrack = -1;
   }
 
-  audio.addEventListener('ended', () => {
+  audio.addEventListener("ended", () => {
     if (currentTrack < playlist.length - 1) playNext();
-    else document.getElementById('p-play').textContent = '▶';
+    else document.getElementById("p-play").textContent = "▶";
   });
-
-  audio.addEventListener('timeupdate', () => {
+  audio.addEventListener("timeupdate", () => {
     if (!audio.duration) return;
-    document.getElementById('p-seek').value = (audio.currentTime / audio.duration) * 100;
-    document.getElementById('p-cur').textContent = fmt(audio.currentTime);
-    document.getElementById('p-dur').textContent = fmt(audio.duration);
+    document.getElementById("p-seek").value = (audio.currentTime / audio.duration) * 100;
+    document.getElementById("p-cur").textContent = fmt(audio.currentTime);
+    document.getElementById("p-dur").textContent = fmt(audio.duration);
   });
-
-  document.getElementById('p-seek').addEventListener('input', e => {
+  document.getElementById("p-seek").addEventListener("input", e => {
     if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration;
   });
-  document.getElementById('p-vol').addEventListener('input', e => {
-    audio.volume = e.target.value / 100;
-  });
+  document.getElementById("p-vol").addEventListener("input", e => { audio.volume = e.target.value / 100; });
   audio.volume = 0.8;
-
-  function fmt(s) {
-    return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
-  }
+  function fmt(s) { return `${Math.floor(s/60)}:${Math.floor(s%60).toString().padStart(2,"0")}`; }
 
   // ── Video (inline) ────────────────────────────────────────
   let activeVideo = null;
-
   function toggleVideo(idx) {
-    const row = document.getElementById('player-' + idx);
-    const vid = document.getElementById('video-' + idx);
+    const row = document.getElementById("player-" + idx);
+    const vid = document.getElementById("video-" + idx);
     if (!row) return;
-    if (row.style.display === 'none') {
+    if (row.style.display === "none") {
       if (activeVideo && activeVideo !== vid) {
         activeVideo.pause();
-        activeVideo.closest('tr').style.display = 'none';
+        activeVideo.closest("tr").style.display = "none";
       }
-      row.style.display = '';
-      vid.play();
-      activeVideo = vid;
+      row.style.display = ""; vid.play(); activeVideo = vid;
     } else {
-      row.style.display = 'none';
-      vid.pause();
-      activeVideo = null;
+      row.style.display = "none"; vid.pause(); activeVideo = null;
     }
   }
 
-  // ── Image preview with prev/next ──────────────────────────
-  function openPreview(entryIdx) {
-    const entry = ENTRIES[entryIdx];
-    const ii    = images.findIndex(i => i.rel === entry.rel);
+  // ── Image preview ─────────────────────────────────────────
+  function openPreviewByRel(rel) {
+    const ii = imgList.findIndex(i => i.rel === rel);
     if (ii !== -1) showImage(ii);
   }
-
   function showImage(ii) {
-    if (ii < 0 || ii >= images.length) return;
+    if (ii < 0 || ii >= imgList.length) return;
     currentImage = ii;
-    const img = images[ii];
-    document.getElementById('modal-img').src = '/file/' + img.rel;
-    document.getElementById('modal-name').textContent = img.name;
-    document.getElementById('modal').classList.add('open');
-    document.getElementById('modal-prev').style.visibility = ii > 0 ? '' : 'hidden';
-    document.getElementById('modal-next').style.visibility = ii < images.length - 1 ? '' : 'hidden';
+    const img = imgList[ii];
+    document.getElementById("modal-img").src = "/file/" + img.rel;
+    document.getElementById("modal-name").textContent = img.name;
+    document.getElementById("modal").classList.add("open");
+    document.getElementById("modal-prev").style.visibility = ii > 0 ? "" : "hidden";
+    document.getElementById("modal-next").style.visibility = ii < imgList.length-1 ? "" : "hidden";
   }
-
   function modalStep(dir) { showImage(currentImage + dir); }
-
   function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.getElementById('modal-img').src = '';
+    document.getElementById("modal").classList.remove("open");
+    document.getElementById("modal-img").src = "";
     currentImage = -1;
   }
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape')      closeModal();
-    if (e.key === 'ArrowLeft')   modalStep(-1);
-    if (e.key === 'ArrowRight')  modalStep(1);
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape")     closeModal();
+    if (e.key === "ArrowLeft")  modalStep(-1);
+    if (e.key === "ArrowRight") modalStep(1);
   });
+
+  function h(s) { return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 </script>
 </body>
 </html>

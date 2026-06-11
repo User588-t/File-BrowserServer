@@ -205,13 +205,7 @@ async def admin_delete(visitor_id: str, request: Request):
     return RedirectResponse(f"/{ADMIN_PATH}", status_code=303)
 
 # ── File Browser ───────────────────────────────────────────────
-@app.get("/", response_class=HTMLResponse)
-@app.get("/browse/{rel:path}", response_class=HTMLResponse)
-async def browse(request: Request, rel: str = ""):
-    path = safe_path(rel)
-    if not path.exists() or not path.is_dir():
-        raise HTTPException(404)
-
+def _list_entries(rel: str, path: Path) -> list[dict]:
     entries = []
     for item in sorted(path.iterdir(), key=lambda x: (x.is_file(), x.name.lower())):
         entries.append({
@@ -222,7 +216,23 @@ async def browse(request: Request, rel: str = ""):
             "size":       f"{item.stat().st_size / 1024 / 1024:.1f} MB" if item.is_file() else "",
             "size_bytes": item.stat().st_size if item.is_file() else 0,
         })
+    if rel:
+        parent = str(Path(rel).parent).replace("\\", "/")
+        if parent == ".": parent = ""
+        entries.insert(0, {
+            "name": "..", "is_dir": True, "type": "folder",
+            "rel": parent, "size": "", "size_bytes": -1,
+        })
+    return entries
 
+@app.get("/", response_class=HTMLResponse)
+@app.get("/browse/{rel:path}", response_class=HTMLResponse)
+async def browse(request: Request, rel: str = ""):
+    path = safe_path(rel)
+    if not path.exists() or not path.is_dir():
+        raise HTTPException(404)
+
+    entries     = _list_entries(rel, path)
     parts       = [p for p in rel.split("/") if p]
     breadcrumbs = [("Root", "")]
     for i, p in enumerate(parts):
@@ -232,6 +242,14 @@ async def browse(request: Request, rel: str = ""):
         "request": request, "entries": entries,
         "breadcrumbs": breadcrumbs, "rel": rel, "config": CONFIG,
     })
+
+@app.get("/api/browse", response_class=JSONResponse)
+@app.get("/api/browse/{rel:path}", response_class=JSONResponse)
+async def api_browse(rel: str = ""):
+    path = safe_path(rel)
+    if not path.exists() or not path.is_dir():
+        raise HTTPException(404)
+    return JSONResponse({"entries": _list_entries(rel, path), "rel": rel})
 
 # ── File serving with Range support (audio scrubbing) ─────────
 @app.get("/file/{rel:path}")

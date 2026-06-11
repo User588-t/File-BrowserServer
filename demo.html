@@ -61,6 +61,8 @@
     .col-name a:hover { color: #a78bfa; }
     .col-name a.folder { color: #fbbf24; }
     .col-name a.folder:hover { color: #fcd34d; }
+    .col-name a.parent { color: #888; font-style: italic; }
+    .col-name a.parent:hover { color: #bbb; }
     .col-size { color: #4a4a60; font-size: 0.8rem; text-align: right; white-space: nowrap; }
     .col-type { color: #383850; font-size: 0.78rem; }
     .col-actions { text-align: right; white-space: nowrap; }
@@ -315,16 +317,27 @@ function renderTable(entries) {
   Object.values(videoAnims).forEach(a => a.stop());
   Object.keys(videoAnims).forEach(k => delete videoAnims[k]);
 
-  if (!entries.length) {
+  // Build parent (..) entry for non-root folders
+  let withParent = [...entries];
+  if (currentPath !== "") {
+    const parentPath = currentPath.includes("/")
+      ? currentPath.substring(0, currentPath.lastIndexOf("/"))
+      : "";
+    withParent.unshift({ name:"..", type:"folder", is_dir:true, rel:parentPath, size:"", size_bytes:-1 });
+  }
+
+  if (!withParent.length) {
     table.style.display = "none"; empty.style.display = ""; return;
   }
   empty.style.display = "none"; table.style.display = "";
 
-  const sorted = [...entries].sort((a, b) => {
+  const parent = withParent.find(e => e.name === "..");
+  const rest   = withParent.filter(e => e.name !== "..").sort((a, b) => {
     if (a.is_dir && !b.is_dir) return -1;
     if (!a.is_dir && b.is_dir) return 1;
     return a.name.localeCompare(b.name);
   });
+  const sorted = parent ? [parent, ...rest] : rest;
 
   tbody.innerHTML = sorted.map((e, i) => makeRow(e, i + 1)).join("");
 }
@@ -332,15 +345,16 @@ function renderTable(entries) {
 const ICONS = { folder:"📁", audio:"🎵", image:"🖼️", video:"🎬", file:"📄" };
 
 function makeRow(e, idx) {
-  const icon = ICONS[e.type] || "📄";
+  const icon = e.name === ".." ? "⬆️" : (ICONS[e.type] || "📄");
   let link;
-  if      (e.is_dir)          link = `<a class="folder" onclick="navigate('${esc(e.rel)}')">${esc(e.name)}</a>`;
+  if      (e.name === "..")    link = `<a class="parent" onclick="navigate('${esc(e.rel)}')">.. (parent folder)</a>`;
+  else if (e.is_dir)           link = `<a class="folder" onclick="navigate('${esc(e.rel)}')">${esc(e.name)}</a>`;
   else if (e.type === "audio") link = `<a onclick="playByRel('${esc(e.rel)}')">${esc(e.name)}</a>`;
   else if (e.type === "video") link = `<a onclick="toggleVideo(${idx})">${esc(e.name)}</a>`;
   else if (e.type === "image") link = `<a onclick="openPreviewByRel('${esc(e.rel)}')">${esc(e.name)}</a>`;
   else                         link = `<span style="color:#888">${esc(e.name)}</span>`;
 
-  const dl = e.is_dir
+  const dl = (e.is_dir || e.name === "..")
     ? ""
     : `<a class="btn-dl" onclick="alert('Demo mode — download not available')">⬇ Download</a>`;
 
@@ -370,6 +384,7 @@ function makeRow(e, idx) {
 function filterFiles() {
   const q = document.getElementById("search").value.toLowerCase().trim();
   document.querySelectorAll("#file-tbody tr.file-row").forEach(row => {
+    if (row.dataset.name === "..") return; // always show ..
     const show = !q || row.dataset.name.toLowerCase().includes(q);
     row.style.display = show ? "" : "none";
     const pr = document.getElementById("player-" + row.dataset.idx);
@@ -382,8 +397,10 @@ function sortBy(col) {
   if (sortCol === col) sortDir = -sortDir;
   else { sortCol = col; sortDir = 1; }
 
-  const tbody = document.getElementById("file-tbody");
-  const rows  = [...tbody.querySelectorAll("tr.file-row")];
+  const tbody   = document.getElementById("file-tbody");
+  const allRows = [...tbody.querySelectorAll("tr.file-row")];
+  const parent  = allRows.find(r => r.dataset.name === "..");
+  const rows    = allRows.filter(r => r.dataset.name !== "..");
 
   rows.sort((a, b) => {
     if (a.dataset.type === "folder" && b.dataset.type !== "folder") return -1;
@@ -392,6 +409,7 @@ function sortBy(col) {
     return a.dataset[col].localeCompare(b.dataset[col]) * sortDir;
   });
 
+  if (parent) tbody.appendChild(parent); // .. always first
   rows.forEach(row => {
     tbody.appendChild(row);
     const pr = document.getElementById("player-" + row.dataset.idx);
