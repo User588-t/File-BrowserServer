@@ -16,13 +16,13 @@
       padding: 14px 24px; display: flex; align-items: center; gap: 12px;
     }
     header h1 { font-size: 1.1rem; font-weight: 600; color: #c084fc; }
-    .demo-badge {
+    .badge {
       font-size: 0.68rem; background: #7c3aed22; border: 1px solid #7c3aed55;
       color: #a78bfa; padding: 2px 9px; border-radius: 12px; letter-spacing: .08em;
     }
     .breadcrumbs {
       display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
-      padding: 10px 24px; font-size: 0.85rem; color: #888;
+      padding: 10px 24px; font-size: 0.85rem;
     }
     .breadcrumbs a { color: #a78bfa; text-decoration: none; cursor: pointer; }
     .breadcrumbs a:hover { color: #c084fc; }
@@ -33,8 +33,7 @@
     }
     #search {
       background: #1a1a24; border: 1px solid #2a2a3a; color: #e0e0e0;
-      padding: 7px 14px; border-radius: 6px; font-size: 0.88rem;
-      outline: none; width: 260px;
+      padding: 7px 14px; border-radius: 6px; font-size: 0.88rem; outline: none; width: 260px;
     }
     #search:focus { border-color: #7c3aed; }
     #search::placeholder { color: #444; }
@@ -52,50 +51,45 @@
       font-size: 0.72rem; text-transform: uppercase; letter-spacing: .06em;
       color: #484860; border-bottom: 1px solid #1e1e2a;
     }
-    tbody tr.file-row { border-bottom: 1px solid #15151e; transition: background .1s; }
-    tbody tr.file-row:hover { background: #16161f; }
-    tbody tr.file-row.playing { background: #180f2e; }
+    tr.file-row { border-bottom: 1px solid #15151e; transition: background .1s; }
+    tr.file-row:hover { background: #16161f; }
+    tr.file-row.playing { background: #180f2e; }
     td { padding: 9px 12px; font-size: 0.88rem; }
     .col-icon { width: 36px; text-align: center; font-size: 1.1rem; }
     .col-name a { color: #e0e0e0; text-decoration: none; cursor: pointer; }
     .col-name a:hover { color: #a78bfa; }
     .col-name a.folder { color: #fbbf24; }
     .col-name a.folder:hover { color: #fcd34d; }
-    .col-name a.parent { color: #888; font-style: italic; }
-    .col-name a.parent:hover { color: #bbb; }
+    .col-name a.parent { color: #666; font-style: italic; }
+    .col-name a.parent:hover { color: #aaa; }
     .col-size { color: #4a4a60; font-size: 0.8rem; text-align: right; white-space: nowrap; }
     .col-type { color: #383850; font-size: 0.78rem; }
     .col-actions { text-align: right; white-space: nowrap; }
     .btn-dl {
-      display: inline-block; padding: 3px 9px; border-radius: 4px;
-      font-size: 0.74rem; text-decoration: none; cursor: pointer;
-      background: #1a2030; color: #7090b0; border: 1px solid #283040;
+      display: inline-block; padding: 3px 9px; border-radius: 4px; font-size: 0.74rem;
+      cursor: pointer; background: #1a2030; color: #7090b0; border: 1px solid #283040;
     }
     .btn-dl:hover { background: #283040; color: #e0e0e0; }
     tr.media-row td { padding: 0 12px 12px; background: #0a0a10; }
-    canvas.demo-video { width: 100%; border-radius: 4px; background: #000; display: block; }
+    canvas.demo-vid { width: 100%; border-radius: 4px; display: block; background: #000; }
     .empty { padding: 60px; text-align: center; color: #2a2a38; }
     .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
 
-    /* Image modal */
+    /* Modal */
     #modal {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.9); z-index: 200;
-      align-items: center; justify-content: center;
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+      z-index: 200; align-items: center; justify-content: center;
     }
     #modal.open { display: flex; }
     .modal-inner { max-width: 92vw; max-height: 90vh; text-align: center; }
-    #modal-img {
-      max-width: 100%; max-height: 82vh; border-radius: 6px;
-      object-fit: contain; display: block; margin: 0 auto;
-    }
+    #modal-img { max-width: 100%; max-height: 82vh; border-radius: 6px; object-fit: contain; display: block; margin: 0 auto; }
     #modal-name { color: #555; font-size: 0.82rem; margin-top: 10px; }
     .modal-close {
       position: fixed; top: 14px; right: 18px;
-      background: #222230; border: none; color: #aaa;
-      font-size: 0.9rem; cursor: pointer; padding: 6px 14px; border-radius: 6px;
+      background: #222230; border: none; color: #aaa; font-size: 0.9rem;
+      cursor: pointer; padding: 6px 14px; border-radius: 6px;
     }
-    .modal-close:hover { color: #fff; background: #333; }
+    .modal-close:hover { color: #fff; }
     .modal-nav {
       position: fixed; top: 50%; transform: translateY(-50%);
       background: rgba(0,0,0,0.5); border: none; color: #aaa;
@@ -105,41 +99,27 @@
     #modal-prev { left: 10px; }
     #modal-next { right: 10px; }
 
-    /* Audio player bar */
+    /* Player bar */
     #player-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: #12121c; border-top: 1px solid #22223a;
       padding: 9px 20px; display: flex; align-items: center; gap: 14px;
-      z-index: 100; transform: translateY(100%); transition: transform .25s ease;
+      z-index: 100; transform: translateY(100%); transition: transform .25s;
     }
-    #player-bar.visible { transform: translateY(0); }
-    .track-info {
-      display: flex; align-items: center; gap: 8px;
-      flex: 0 0 210px; min-width: 0; overflow: hidden;
-    }
-    #track-icon { font-size: 1rem; flex-shrink: 0; }
-    #track-name {
-      font-size: 0.82rem; white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; color: #e0e0e0;
-    }
-    .p-controls { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
-    .p-btn {
-      background: none; border: none; color: #a78bfa;
-      font-size: 1rem; cursor: pointer; padding: 5px 9px;
-      border-radius: 4px; line-height: 1;
-    }
-    .p-btn:hover { background: #22223a; }
-    #p-play { font-size: 1.25rem; }
-    .p-progress { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-    .p-time { font-size: 0.72rem; color: #484860; min-width: 34px; flex-shrink: 0; }
-    #p-seek { flex: 1; accent-color: #7c3aed; cursor: pointer; }
+    #player-bar.show { transform: translateY(0); }
+    .t-info { display: flex; align-items: center; gap: 8px; flex: 0 0 210px; min-width: 0; overflow: hidden; }
+    #t-name { font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .p-ctrl { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
+    .pb { background: none; border: none; color: #a78bfa; font-size: 1rem; cursor: pointer; padding: 5px 9px; border-radius: 4px; }
+    .pb:hover { background: #22223a; }
+    #pb-play { font-size: 1.25rem; }
+    .p-prog { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .p-t { font-size: 0.72rem; color: #484860; min-width: 34px; flex-shrink: 0; }
+    #pb-seek { flex: 1; accent-color: #7c3aed; cursor: pointer; }
     .p-vol { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; flex-shrink: 0; }
-    #p-vol { width: 70px; accent-color: #7c3aed; }
-    .p-close {
-      background: none; border: none; color: #333; cursor: pointer;
-      font-size: 1rem; padding: 4px 6px; flex-shrink: 0;
-    }
-    .p-close:hover { color: #aaa; }
+    #pb-vol { width: 70px; accent-color: #7c3aed; }
+    .pb-close { background: none; border: none; color: #333; cursor: pointer; font-size: 1rem; padding: 4px 6px; }
+    .pb-close:hover { color: #aaa; }
     #main-audio { display: none; }
   </style>
 </head>
@@ -147,248 +127,256 @@
 
 <header>
   <h1>File Browser</h1>
-  <span class="demo-badge">DEMO</span>
+  <span class="badge">DEMO</span>
 </header>
 
-<div class="breadcrumbs" id="breadcrumbs"></div>
+<div class="breadcrumbs" id="bc"></div>
 
 <div class="controls">
-  <input type="search" id="search" placeholder="🔍  Search files…" oninput="filterFiles()">
+  <input type="search" id="search" placeholder="🔍  Search files…" oninput="doSearch()">
   <span class="sort-label">Sort:</span>
   <button class="sort-btn active" data-sort="name" data-label="Name" onclick="sortBy('name')">Name ↑</button>
-  <button class="sort-btn" data-sort="size" data-label="Size"  onclick="sortBy('size')">Size ↕</button>
-  <button class="sort-btn" data-sort="type" data-label="Type"  onclick="sortBy('type')">Type ↕</button>
+  <button class="sort-btn" data-sort="size"  data-label="Size"  onclick="sortBy('size')">Size ↕</button>
+  <button class="sort-btn" data-sort="type"  data-label="Type"  onclick="sortBy('type')">Type ↕</button>
 </div>
 
 <div class="container">
-  <table id="file-table" style="display:none">
-    <thead>
-      <tr>
-        <th class="col-icon"></th>
-        <th>Name</th>
-        <th style="text-align:right">Size</th>
-        <th>Type</th>
-        <th style="text-align:right">Actions</th>
-      </tr>
-    </thead>
-    <tbody id="file-tbody"></tbody>
+  <table id="tbl">
+    <thead><tr>
+      <th class="col-icon"></th><th>Name</th>
+      <th style="text-align:right">Size</th><th>Type</th>
+      <th style="text-align:right">Actions</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
   </table>
-  <div id="empty-state" class="empty" style="display:none">
-    <div class="empty-icon">📂</div>
-    This folder is empty.
+  <div id="empty" class="empty" style="display:none">
+    <div class="empty-icon">📂</div>This folder is empty.
   </div>
 </div>
 
-<!-- Image modal -->
 <div id="modal" onclick="closeModal()">
   <div class="modal-inner" onclick="event.stopPropagation()">
-    <img id="modal-img" src="" alt="">
-    <div id="modal-name"></div>
+    <img id="modal-img" src="" alt=""><div id="modal-name"></div>
   </div>
   <button class="modal-close" onclick="closeModal()">✕ Close</button>
-  <button class="modal-nav" id="modal-prev" onclick="event.stopPropagation();modalStep(-1)">‹</button>
-  <button class="modal-nav" id="modal-next" onclick="event.stopPropagation();modalStep(1)">›</button>
+  <button class="modal-nav" id="modal-prev" onclick="event.stopPropagation();imgStep(-1)">‹</button>
+  <button class="modal-nav" id="modal-next" onclick="event.stopPropagation();imgStep(1)">›</button>
 </div>
 
-<!-- Audio player bar -->
 <div id="player-bar">
-  <div class="track-info">
-    <span id="track-icon">🎵</span>
-    <span id="track-name">No track</span>
+  <div class="t-info"><span>🎵</span><span id="t-name">—</span></div>
+  <div class="p-ctrl">
+    <button class="pb" onclick="prevTrack()">⏮</button>
+    <button class="pb" id="pb-play" onclick="togglePlay()">▶</button>
+    <button class="pb" onclick="nextTrack()">⏭</button>
   </div>
-  <div class="p-controls">
-    <button class="p-btn" onclick="playPrev()" title="Previous">⏮</button>
-    <button class="p-btn" id="p-play" onclick="togglePlay()">▶</button>
-    <button class="p-btn" onclick="playNext()" title="Next">⏭</button>
+  <div class="p-prog">
+    <span class="p-t" id="pb-cur">0:00</span>
+    <input type="range" id="pb-seek" value="0" min="0" max="100" step="0.1">
+    <span class="p-t" id="pb-dur">0:00</span>
   </div>
-  <div class="p-progress">
-    <span class="p-time" id="p-cur">0:00</span>
-    <input type="range" id="p-seek" value="0" min="0" max="100" step="0.1">
-    <span class="p-time" id="p-dur">0:00</span>
-  </div>
-  <div class="p-vol">🔊 <input type="range" id="p-vol" value="80" min="0" max="100"></div>
-  <button class="p-close" onclick="closePlayer()">✕</button>
+  <div class="p-vol">🔊<input type="range" id="pb-vol" value="80" min="0" max="100"></div>
+  <button class="pb-close" onclick="stopPlayer()">✕</button>
   <audio id="main-audio"></audio>
 </div>
 
 <script>
-// ── Demo file system data ─────────────────────────────────────
+// ── Fake file system ──────────────────────────────────────────
 const FS = {
   "": [
-    { name:"Music",      type:"folder", is_dir:true,  rel:"Music",      size:"",        size_bytes:0 },
-    { name:"Videos",     type:"folder", is_dir:true,  rel:"Videos",     size:"",        size_bytes:0 },
-    { name:"Images",     type:"folder", is_dir:true,  rel:"Images",     size:"",        size_bytes:0 },
-    { name:"Documents",  type:"folder", is_dir:true,  rel:"Documents",  size:"",        size_bytes:0 },
-    { name:"README.txt", type:"file",   is_dir:false, rel:"README.txt", size:"0.0 MB",  size_bytes:512 },
+    { name:"🎵 Music",       type:"folder", is_dir:true,  rel:"Music",      size:"",        bytes:0 },
+    { name:"🎬 Videos",      type:"folder", is_dir:true,  rel:"Videos",     size:"",        bytes:0 },
+    { name:"🖼️ Images",      type:"folder", is_dir:true,  rel:"Images",     size:"",        bytes:0 },
+    { name:"📁 Documents",   type:"folder", is_dir:true,  rel:"Documents",  size:"",        bytes:0 },
+    { name:"🎵 Podcasts",    type:"folder", is_dir:true,  rel:"Podcasts",   size:"",        bytes:0 },
+    { name:"README.txt",     type:"file",   is_dir:false, rel:"README.txt", size:"0.0 MB",  bytes:512  },
   ],
   "Music": [
-    { name:"Jazz Classics",                  type:"folder", is_dir:true,  rel:"Music/Jazz Classics", size:"", size_bytes:0 },
-    { name:"Beethoven - Symphony No.9.mp3",  type:"audio",  is_dir:false, rel:"Music/Beethoven - Symphony No.9.mp3",  size:"8.4 MB",  size_bytes:8807882, freq:261 },
-    { name:"Bach - Cello Suite No.1.mp3",    type:"audio",  is_dir:false, rel:"Music/Bach - Cello Suite No.1.mp3",    size:"5.1 MB",  size_bytes:5348454, freq:329 },
-    { name:"Mozart - Piano Sonata K.331.mp3",type:"audio",  is_dir:false, rel:"Music/Mozart - Piano Sonata K.331.mp3",size:"6.3 MB",  size_bytes:6607102, freq:392 },
-    { name:"Chopin - Nocturne Op.9.mp3",     type:"audio",  is_dir:false, rel:"Music/Chopin - Nocturne Op.9.mp3",     size:"4.8 MB",  size_bytes:5033164, freq:440 },
+    { name:"Jazz",                           type:"folder", is_dir:true,  rel:"Music/Jazz", size:"", bytes:0 },
+    { name:"Beethoven - Symphony No.9.mp3",  type:"audio",  is_dir:false, rel:"Music/Beethoven - Symphony No.9.mp3",  size:"8.4 MB",  bytes:8807882, freq:261 },
+    { name:"Bach - Cello Suite No.1.mp3",    type:"audio",  is_dir:false, rel:"Music/Bach - Cello Suite No.1.mp3",    size:"5.1 MB",  bytes:5348454, freq:329 },
+    { name:"Mozart - Piano Sonata K.331.mp3",type:"audio",  is_dir:false, rel:"Music/Mozart - Piano Sonata K.331.mp3",size:"6.3 MB",  bytes:6607102, freq:392 },
+    { name:"Chopin - Nocturne Op.9.mp3",     type:"audio",  is_dir:false, rel:"Music/Chopin - Nocturne Op.9.mp3",     size:"4.8 MB",  bytes:5033164, freq:440 },
+    { name:"Vivaldi - Four Seasons.mp3",     type:"audio",  is_dir:false, rel:"Music/Vivaldi - Four Seasons.mp3",     size:"7.2 MB",  bytes:7549747, freq:523 },
   ],
-  "Music/Jazz Classics": [
-    { name:"Miles Davis - Kind of Blue.mp3",  type:"audio", is_dir:false, rel:"Music/Jazz Classics/Miles Davis - Kind of Blue.mp3",  size:"9.2 MB", size_bytes:9646899, freq:293 },
-    { name:"Coltrane - A Love Supreme.mp3",   type:"audio", is_dir:false, rel:"Music/Jazz Classics/Coltrane - A Love Supreme.mp3",   size:"7.8 MB", size_bytes:8179260, freq:349 },
-    { name:"Dave Brubeck - Take Five.mp3",    type:"audio", is_dir:false, rel:"Music/Jazz Classics/Dave Brubeck - Take Five.mp3",    size:"5.4 MB", size_bytes:5662310, freq:523 },
+  "Music/Jazz": [
+    { name:"Miles Davis - Kind of Blue.mp3", type:"audio", is_dir:false, rel:"Music/Jazz/Miles Davis - Kind of Blue.mp3", size:"9.2 MB", bytes:9646899, freq:293 },
+    { name:"Coltrane - A Love Supreme.mp3",  type:"audio", is_dir:false, rel:"Music/Jazz/Coltrane - A Love Supreme.mp3",  size:"7.8 MB", bytes:8179260, freq:349 },
+    { name:"Dave Brubeck - Take Five.mp3",   type:"audio", is_dir:false, rel:"Music/Jazz/Dave Brubeck - Take Five.mp3",   size:"5.4 MB", bytes:5662310, freq:220 },
+    { name:"Bill Evans - Waltz for Debby.mp3",type:"audio",is_dir:false, rel:"Music/Jazz/Bill Evans - Waltz for Debby.mp3",size:"6.1 MB",bytes:6396508, freq:165 },
   ],
   "Videos": [
-    { name:"intro.mp4",     type:"video", is_dir:false, rel:"Videos/intro.mp4",     size:"124.5 MB", size_bytes:130542592 },
-    { name:"tutorial.webm", type:"video", is_dir:false, rel:"Videos/tutorial.webm", size:"45.2 MB",  size_bytes:47382323 },
-    { name:"demo-reel.mp4", type:"video", is_dir:false, rel:"Videos/demo-reel.mp4", size:"88.0 MB",  size_bytes:92274688 },
+    { name:"intro.mp4",       type:"video", is_dir:false, rel:"Videos/intro.mp4",       size:"124.5 MB", bytes:130542592 },
+    { name:"tutorial.webm",   type:"video", is_dir:false, rel:"Videos/tutorial.webm",   size:"45.2 MB",  bytes:47382323  },
+    { name:"demo-reel.mp4",   type:"video", is_dir:false, rel:"Videos/demo-reel.mp4",   size:"88.0 MB",  bytes:92274688  },
+    { name:"presentation.mp4",type:"video", is_dir:false, rel:"Videos/presentation.mp4",size:"212.3 MB", bytes:222601011 },
   ],
   "Images": [
-    { name:"Wallpapers",      type:"folder", is_dir:true,  rel:"Images/Wallpapers", size:"",       size_bytes:0 },
-    { name:"landscape.jpg",   type:"image",  is_dir:false, rel:"Images/landscape.jpg",   size:"2.1 MB", size_bytes:2202009, clr:["#7c3aed","#3b82f6"] },
-    { name:"portrait.png",    type:"image",  is_dir:false, rel:"Images/portrait.png",    size:"3.4 MB", size_bytes:3565158, clr:["#059669","#0d9488"] },
-    { name:"screenshot.png",  type:"image",  is_dir:false, rel:"Images/screenshot.png",  size:"0.8 MB", size_bytes:838860,  clr:["#dc2626","#ea580c"] },
-    { name:"abstract.webp",   type:"image",  is_dir:false, rel:"Images/abstract.webp",   size:"1.2 MB", size_bytes:1258291, clr:["#d97706","#65a30d"] },
+    { name:"Wallpapers",      type:"folder", is_dir:true,  rel:"Images/Wallpapers", size:"", bytes:0 },
+    { name:"Screenshots",     type:"folder", is_dir:true,  rel:"Images/Screenshots",size:"", bytes:0 },
+    { name:"landscape.jpg",   type:"image",  is_dir:false, rel:"Images/landscape.jpg",   size:"2.1 MB", bytes:2202009, clr:["#7c3aed","#3b82f6"] },
+    { name:"portrait.png",    type:"image",  is_dir:false, rel:"Images/portrait.png",    size:"3.4 MB", bytes:3565158, clr:["#059669","#0d9488"] },
+    { name:"abstract.webp",   type:"image",  is_dir:false, rel:"Images/abstract.webp",   size:"1.2 MB", bytes:1258291, clr:["#d97706","#65a30d"] },
+    { name:"poster.jpg",      type:"image",  is_dir:false, rel:"Images/poster.jpg",      size:"4.8 MB", bytes:5033164, clr:["#dc2626","#9333ea"] },
   ],
   "Images/Wallpapers": [
-    { name:"forest.jpg", type:"image", is_dir:false, rel:"Images/Wallpapers/forest.jpg", size:"4.2 MB", size_bytes:4404019, clr:["#14532d","#166534"] },
-    { name:"sunset.jpg", type:"image", is_dir:false, rel:"Images/Wallpapers/sunset.jpg", size:"3.8 MB", size_bytes:3984588, clr:["#c2410c","#b45309"] },
-    { name:"ocean.jpg",  type:"image", is_dir:false, rel:"Images/Wallpapers/ocean.jpg",  size:"5.1 MB", size_bytes:5348454, clr:["#0c4a6e","#075985"] },
+    { name:"forest.jpg", type:"image", is_dir:false, rel:"Images/Wallpapers/forest.jpg", size:"4.2 MB", bytes:4404019, clr:["#14532d","#166534"] },
+    { name:"sunset.jpg", type:"image", is_dir:false, rel:"Images/Wallpapers/sunset.jpg", size:"3.8 MB", bytes:3984588, clr:["#c2410c","#b45309"] },
+    { name:"ocean.jpg",  type:"image", is_dir:false, rel:"Images/Wallpapers/ocean.jpg",  size:"5.1 MB", bytes:5348454, clr:["#0c4a6e","#075985"] },
+    { name:"mountains.jpg",type:"image",is_dir:false,rel:"Images/Wallpapers/mountains.jpg",size:"6.0 MB",bytes:6291456,clr:["#374151","#1e3a5f"] },
+  ],
+  "Images/Screenshots": [
+    { name:"screenshot-2024-01.png",type:"image",is_dir:false,rel:"Images/Screenshots/screenshot-2024-01.png",size:"0.8 MB",bytes:838860, clr:["#1e293b","#334155"] },
+    { name:"screenshot-2024-02.png",type:"image",is_dir:false,rel:"Images/Screenshots/screenshot-2024-02.png",size:"1.1 MB",bytes:1153434,clr:["#1a1a2e","#16213e"] },
   ],
   "Documents": [
-    { name:"report-2024.pdf", type:"file", is_dir:false, rel:"Documents/report-2024.pdf", size:"1.4 MB", size_bytes:1468006 },
-    { name:"notes.txt",       type:"file", is_dir:false, rel:"Documents/notes.txt",       size:"0.0 MB", size_bytes:1024    },
-    { name:"archive.zip",     type:"file", is_dir:false, rel:"Documents/archive.zip",     size:"45.8 MB",size_bytes:48024576},
+    { name:"report-2024.pdf",  type:"file", is_dir:false, rel:"Documents/report-2024.pdf",  size:"1.4 MB",  bytes:1468006  },
+    { name:"notes.txt",        type:"file", is_dir:false, rel:"Documents/notes.txt",         size:"0.0 MB",  bytes:2048     },
+    { name:"presentation.pdf", type:"file", is_dir:false, rel:"Documents/presentation.pdf",  size:"8.2 MB",  bytes:8598323  },
+    { name:"data.xlsx",        type:"file", is_dir:false, rel:"Documents/data.xlsx",         size:"2.7 MB",  bytes:2831155  },
+    { name:"archive.zip",      type:"file", is_dir:false, rel:"Documents/archive.zip",       size:"45.8 MB", bytes:48024576 },
+  ],
+  "Podcasts": [
+    { name:"Lex Fridman #401.mp3",      type:"audio", is_dir:false, rel:"Podcasts/Lex Fridman #401.mp3",       size:"183.4 MB", bytes:192299008, freq:180 },
+    { name:"Huberman Lab - Sleep.mp3",  type:"audio", is_dir:false, rel:"Podcasts/Huberman Lab - Sleep.mp3",    size:"97.2 MB",  bytes:101904998, freq:210 },
+    { name:"Tim Ferriss #700.mp3",      type:"audio", is_dir:false, rel:"Podcasts/Tim Ferriss #700.mp3",        size:"124.6 MB", bytes:130662963, freq:245 },
   ],
 };
 
 // ── State ─────────────────────────────────────────────────────
-let currentPath    = "";
-let currentEntries = [];
-let playlist       = [];
-let imgList        = [];
-let currentTrack   = -1;
-let currentImage   = -1;
-let sortCol        = "name";
-let sortDir        = 1;
-const videoAnims   = {};
-const audioCache   = {};
+let path      = "";
+let playlist  = [];
+let imgList   = [];
+let trackIdx  = -1;
+let imgIdx    = -1;
+let sortCol   = "name";
+let sortDir   = 1;
+const vAnims  = {};
+const wavCache= {};
 
 // ── Boot ──────────────────────────────────────────────────────
-navigate("", false);
-window.addEventListener("popstate", e => navigate(e.state?.path ?? "", false));
+window.addEventListener("DOMContentLoaded", () => {
+  goTo("", false);
+  window.addEventListener("popstate", e => goTo(e.state?.path ?? "", false));
+  document.getElementById("pb-seek").addEventListener("input", e => {
+    if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration;
+  });
+  document.getElementById("pb-vol").addEventListener("input", e => { audio.volume = e.target.value / 100; });
+  audio.volume = 0.8;
+});
 
 // ── Navigation ────────────────────────────────────────────────
-function navigate(path, push = true) {
-  currentPath    = path;
-  currentEntries = FS[path] || [];
-  playlist       = currentEntries.filter(e => e.type === "audio");
-  imgList        = currentEntries.filter(e => e.type === "image");
-
-  if (push) history.pushState({ path }, "", "#" + (path ? "/" + path : ""));
-
+function goTo(p, push = true) {
+  path     = p;
+  const entries = FS[p] || [];
+  playlist = entries.filter(e => e.type === "audio");
+  imgList  = entries.filter(e => e.type === "image");
+  if (push) history.pushState({ path: p }, "", "#" + (p ? "/" + p : ""));
   document.getElementById("search").value = "";
   sortCol = "name"; sortDir = 1;
   document.querySelectorAll(".sort-btn").forEach(b => {
-    const active = b.dataset.sort === "name";
-    b.classList.toggle("active", active);
-    b.textContent = b.dataset.label + (active ? " ↑" : " ↕");
+    b.classList.toggle("active", b.dataset.sort === "name");
+    b.textContent = b.dataset.label + (b.dataset.sort === "name" ? " ↑" : " ↕");
   });
-
-  renderBreadcrumbs(path);
-  renderTable(currentEntries);
+  renderBC(p);
+  renderTable(entries);
 }
 
 // ── Breadcrumbs ───────────────────────────────────────────────
-function renderBreadcrumbs(path) {
-  const parts = path ? path.split("/") : [];
-  let html = `<a onclick="navigate('')">Root</a>`;
-  parts.forEach((p, i) => {
-    html += `<span>/</span>`;
+function renderBC(p) {
+  const parts = p ? p.split("/") : [];
+  let h = `<a onclick="goTo('')">Root</a>`;
+  parts.forEach((seg, i) => {
     const fp = parts.slice(0, i + 1).join("/");
-    html += (i === parts.length - 1)
-      ? `<strong style="color:#ddd">${esc(p)}</strong>`
-      : `<a onclick="navigate('${esc(fp)}')">${esc(p)}</a>`;
+    h += `<span>/</span>`;
+    h += i === parts.length - 1
+      ? `<strong style="color:#ddd">${seg}</strong>`
+      : `<a onclick="goTo('${fp}')">${seg}</a>`;
   });
-  document.getElementById("breadcrumbs").innerHTML = html;
+  document.getElementById("bc").innerHTML = h;
 }
 
 // ── Render table ──────────────────────────────────────────────
 function renderTable(entries) {
-  const tbody = document.getElementById("file-tbody");
-  const table = document.getElementById("file-table");
-  const empty = document.getElementById("empty-state");
+  // Stop running canvas anims
+  Object.values(vAnims).forEach(a => a && a.stop && a.stop());
+  Object.keys(vAnims).forEach(k => delete vAnims[k]);
 
-  Object.values(videoAnims).forEach(a => a.stop());
-  Object.keys(videoAnims).forEach(k => delete videoAnims[k]);
+  const tbody = document.getElementById("tbody");
+  const tbl   = document.getElementById("tbl");
+  const empty = document.getElementById("empty");
 
-  // Build parent (..) entry for non-root folders
-  let withParent = [...entries];
-  if (currentPath !== "") {
-    const parentPath = currentPath.includes("/")
-      ? currentPath.substring(0, currentPath.lastIndexOf("/"))
+  // Build list: parent (..) first if not root, then folders, then files
+  const rows = [];
+  if (path !== "") {
+    const parent = path.includes("/") ? path.substring(0, path.lastIndexOf("/")) : "";
+    rows.push({ name:"..", type:"folder", is_dir:true, rel:parent, size:"", bytes:-1, _parent:true });
+  }
+
+  const folders = entries.filter(e => e.is_dir).sort((a,b) => a.name.localeCompare(b.name));
+  const files   = entries.filter(e => !e.is_dir).sort((a,b) => a.name.localeCompare(b.name));
+  rows.push(...folders, ...files);
+
+  if (!entries.length && path === "") {
+    tbl.style.display = "none"; empty.style.display = "block"; return;
+  }
+  tbl.style.display = "table"; empty.style.display = "none";
+
+  const ICON = { folder:"📁", audio:"🎵", image:"🖼️", video:"🎬", file:"📄" };
+
+  tbody.innerHTML = rows.map((e, i) => {
+    const idx  = i + 1;
+    const icon = e._parent ? "⬆️" : (ICON[e.type] || "📄");
+
+    let link;
+    if (e._parent)
+      link = `<a class="parent" onclick="goTo('${e.rel}')">.. (parent folder)</a>`;
+    else if (e.is_dir)
+      link = `<a class="folder" onclick="goTo('${e.rel}')">${e.name}</a>`;
+    else if (e.type === "audio")
+      link = `<a onclick="playRel('${e.rel}')">${e.name}</a>`;
+    else if (e.type === "video")
+      link = `<a onclick="toggleVid(${idx})">${e.name}</a>`;
+    else if (e.type === "image")
+      link = `<a onclick="openImg('${e.rel}')">${e.name}</a>`;
+    else
+      link = `<span style="color:#aaa">${e.name}</span>`;
+
+    const dl = (!e.is_dir && !e._parent)
+      ? `<a class="btn-dl" onclick="alert('Demo: download not available')">⬇ Download</a>`
       : "";
-    withParent.unshift({ name:"..", type:"folder", is_dir:true, rel:parentPath, size:"", size_bytes:-1 });
-  }
 
-  if (!withParent.length) {
-    table.style.display = "none"; empty.style.display = ""; return;
-  }
-  empty.style.display = "none"; table.style.display = "";
+    let row = `
+    <tr class="file-row" data-idx="${idx}" data-name="${e.name}" data-size="${e.bytes}"
+        data-type="${e.type}" data-rel="${e.rel}" ${e._parent ? 'data-parent="1"' : ""}>
+      <td class="col-icon">${icon}</td>
+      <td class="col-name">${link}</td>
+      <td class="col-size">${e.size}</td>
+      <td class="col-type">${e._parent ? "" : e.type}</td>
+      <td class="col-actions">${dl}</td>
+    </tr>`;
 
-  const parent = withParent.find(e => e.name === "..");
-  const rest   = withParent.filter(e => e.name !== "..").sort((a, b) => {
-    if (a.is_dir && !b.is_dir) return -1;
-    if (!a.is_dir && b.is_dir) return 1;
-    return a.name.localeCompare(b.name);
-  });
-  const sorted = parent ? [parent, ...rest] : rest;
-
-  tbody.innerHTML = sorted.map((e, i) => makeRow(e, i + 1)).join("");
-}
-
-const ICONS = { folder:"📁", audio:"🎵", image:"🖼️", video:"🎬", file:"📄" };
-
-function makeRow(e, idx) {
-  const icon = e.name === ".." ? "⬆️" : (ICONS[e.type] || "📄");
-  let link;
-  if      (e.name === "..")    link = `<a class="parent" onclick="navigate('${esc(e.rel)}')">.. (parent folder)</a>`;
-  else if (e.is_dir)           link = `<a class="folder" onclick="navigate('${esc(e.rel)}')">${esc(e.name)}</a>`;
-  else if (e.type === "audio") link = `<a onclick="playByRel('${esc(e.rel)}')">${esc(e.name)}</a>`;
-  else if (e.type === "video") link = `<a onclick="toggleVideo(${idx})">${esc(e.name)}</a>`;
-  else if (e.type === "image") link = `<a onclick="openPreviewByRel('${esc(e.rel)}')">${esc(e.name)}</a>`;
-  else                         link = `<span style="color:#888">${esc(e.name)}</span>`;
-
-  const dl = (e.is_dir || e.name === "..")
-    ? ""
-    : `<a class="btn-dl" onclick="alert('Demo mode — download not available')">⬇ Download</a>`;
-
-  let html = `
-  <tr class="file-row" id="row-${idx}"
-      data-idx="${idx}" data-name="${esc(e.name)}"
-      data-size="${e.size_bytes}" data-type="${e.type}" data-rel="${esc(e.rel)}">
-    <td class="col-icon">${icon}</td>
-    <td class="col-name">${link}</td>
-    <td class="col-size">${e.size}</td>
-    <td class="col-type">${e.type}</td>
-    <td class="col-actions">${dl}</td>
-  </tr>`;
-
-  if (e.type === "video") {
-    html += `
-  <tr class="media-row" id="player-${idx}" style="display:none">
-    <td colspan="5">
-      <canvas class="demo-video" id="canvas-${idx}" width="1200" height="340"></canvas>
-    </td>
-  </tr>`;
-  }
-  return html;
+    if (e.type === "video" && !e._parent) {
+      row += `
+    <tr class="media-row" id="vr-${idx}" style="display:none">
+      <td colspan="5">
+        <canvas class="demo-vid" id="vc-${idx}" width="1200" height="340"></canvas>
+      </td>
+    </tr>`;
+    }
+    return row;
+  }).join("");
 }
 
 // ── Search ────────────────────────────────────────────────────
-function filterFiles() {
+function doSearch() {
   const q = document.getElementById("search").value.toLowerCase().trim();
-  document.querySelectorAll("#file-tbody tr.file-row").forEach(row => {
-    if (row.dataset.name === "..") return; // always show ..
-    const show = !q || row.dataset.name.toLowerCase().includes(q);
-    row.style.display = show ? "" : "none";
-    const pr = document.getElementById("player-" + row.dataset.idx);
-    if (pr && !show) pr.style.display = "none";
+  document.querySelectorAll("#tbody tr.file-row").forEach(r => {
+    if (r.dataset.parent) return;
+    const show = !q || r.dataset.name.toLowerCase().includes(q);
+    r.style.display = show ? "" : "none";
+    const vr = document.getElementById("vr-" + r.dataset.idx);
+    if (vr && !show) vr.style.display = "none";
   });
 }
 
@@ -397,195 +385,186 @@ function sortBy(col) {
   if (sortCol === col) sortDir = -sortDir;
   else { sortCol = col; sortDir = 1; }
 
-  const tbody   = document.getElementById("file-tbody");
-  const allRows = [...tbody.querySelectorAll("tr.file-row")];
-  const parent  = allRows.find(r => r.dataset.name === "..");
-  const rows    = allRows.filter(r => r.dataset.name !== "..");
+  const tbody  = document.getElementById("tbody");
+  const all    = [...tbody.querySelectorAll("tr.file-row")];
+  const par    = all.find(r => r.dataset.parent);
+  const rest   = all.filter(r => !r.dataset.parent);
 
-  rows.sort((a, b) => {
+  rest.sort((a, b) => {
     if (a.dataset.type === "folder" && b.dataset.type !== "folder") return -1;
-    if (a.dataset.type !== "folder" && b.dataset.type === "folder") return 1;
+    if (a.dataset.type !== "folder" && b.dataset.type === "folder") return  1;
     if (col === "size") return (parseInt(a.dataset.size) - parseInt(b.dataset.size)) * sortDir;
     return a.dataset[col].localeCompare(b.dataset[col]) * sortDir;
   });
 
-  if (parent) tbody.appendChild(parent); // .. always first
-  rows.forEach(row => {
-    tbody.appendChild(row);
-    const pr = document.getElementById("player-" + row.dataset.idx);
-    if (pr) tbody.appendChild(pr);
-  });
+  if (par) tbody.appendChild(par);
+  rest.forEach(r => { tbody.appendChild(r); const vr = document.getElementById("vr-"+r.dataset.idx); if (vr) tbody.appendChild(vr); });
 
-  document.querySelectorAll(".sort-btn").forEach(btn => {
-    const active = btn.dataset.sort === sortCol;
-    btn.classList.toggle("active", active);
-    btn.textContent = btn.dataset.label + (active ? (sortDir === 1 ? " ↑" : " ↓") : " ↕");
+  document.querySelectorAll(".sort-btn").forEach(b => {
+    const on = b.dataset.sort === sortCol;
+    b.classList.toggle("active", on);
+    b.textContent = b.dataset.label + (on ? (sortDir === 1 ? " ↑" : " ↓") : " ↕");
   });
 }
 
-// ── Audio player ──────────────────────────────────────────────
+// ── Audio ─────────────────────────────────────────────────────
 const audio = document.getElementById("main-audio");
 
-function playByRel(rel) {
+function playRel(rel) {
   const pi = playlist.findIndex(t => t.rel === rel);
   if (pi !== -1) loadTrack(pi);
+  else {
+    // Track from a different folder — search all FS
+    const all = Object.values(FS).flat().filter(e => e.type === "audio");
+    const e   = all.find(t => t.rel === rel);
+    if (e) { playlist = [e]; loadTrack(0); }
+  }
 }
 
 function loadTrack(pi) {
   if (pi < 0 || pi >= playlist.length) return;
-  currentTrack = pi;
-  const t = playlist[pi];
-  if (!audioCache[t.rel]) audioCache[t.rel] = makeWav(t.freq || 440);
-  audio.src = audioCache[t.rel];
-  document.getElementById("track-name").textContent = t.name;
-  document.getElementById("player-bar").classList.add("visible");
-  document.getElementById("p-play").textContent = "⏸";
+  trackIdx = pi;
+  const t  = playlist[pi];
+  if (!wavCache[t.rel]) wavCache[t.rel] = makeWav(t.freq || 440);
+  audio.src = wavCache[t.rel];
+  document.getElementById("t-name").textContent = t.name;
+  document.getElementById("player-bar").classList.add("show");
+  document.getElementById("pb-play").textContent = "⏸";
   audio.play();
   document.querySelectorAll(".file-row").forEach(r => r.classList.remove("playing"));
-  document.querySelector(`[data-rel="${t.rel}"]`)?.classList.add("playing");
+  document.querySelector(`[data-rel="${CSS.escape(t.rel)}"]`)?.classList.add("playing");
 }
 
 function togglePlay() {
-  if (audio.paused) { audio.play();  document.getElementById("p-play").textContent = "⏸"; }
-  else              { audio.pause(); document.getElementById("p-play").textContent = "▶"; }
+  if (audio.paused) { audio.play();  document.getElementById("pb-play").textContent = "⏸"; }
+  else              { audio.pause(); document.getElementById("pb-play").textContent = "▶"; }
 }
-function playPrev() { loadTrack(currentTrack - 1); }
-function playNext() { loadTrack(currentTrack + 1); }
-function closePlayer() {
+function prevTrack() { loadTrack(trackIdx - 1); }
+function nextTrack() { loadTrack(trackIdx + 1); }
+function stopPlayer() {
   audio.pause(); audio.src = "";
-  document.getElementById("player-bar").classList.remove("visible");
+  document.getElementById("player-bar").classList.remove("show");
   document.querySelectorAll(".file-row").forEach(r => r.classList.remove("playing"));
-  currentTrack = -1;
+  trackIdx = -1;
 }
+
 audio.addEventListener("ended", () => {
-  if (currentTrack < playlist.length - 1) playNext();
-  else document.getElementById("p-play").textContent = "▶";
+  if (trackIdx < playlist.length - 1) nextTrack();
+  else document.getElementById("pb-play").textContent = "▶";
 });
 audio.addEventListener("timeupdate", () => {
   if (!audio.duration) return;
-  document.getElementById("p-seek").value = (audio.currentTime / audio.duration) * 100;
-  document.getElementById("p-cur").textContent = fmt(audio.currentTime);
-  document.getElementById("p-dur").textContent = fmt(audio.duration);
+  document.getElementById("pb-seek").value = (audio.currentTime / audio.duration) * 100;
+  document.getElementById("pb-cur").textContent = fmtT(audio.currentTime);
+  document.getElementById("pb-dur").textContent = fmtT(audio.duration);
 });
-document.getElementById("p-seek").addEventListener("input", e => {
-  if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration;
-});
-document.getElementById("p-vol").addEventListener("input", e => { audio.volume = e.target.value / 100; });
-audio.volume = 0.8;
-function fmt(s) { return `${Math.floor(s/60)}:${Math.floor(s%60).toString().padStart(2,"0")}`; }
+function fmtT(s) { return `${Math.floor(s/60)}:${Math.floor(s%60).toString().padStart(2,"0")}`; }
 
-// ── WAV synthesis (real audio tones) ─────────────────────────
+// ── WAV synthesis ─────────────────────────────────────────────
 function makeWav(base, dur = 20) {
   const sr = 22050, n = Math.floor(sr * dur);
   const buf = new ArrayBuffer(44 + n * 2);
   const v   = new DataView(buf);
-  const w   = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-  w(0,"RIFF"); v.setUint32(4, 36+n*2, true);
-  w(8,"WAVE"); w(12,"fmt ");
+  const wc  = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o+i, s.charCodeAt(i)); };
+  wc(0,"RIFF"); v.setUint32(4,36+n*2,true); wc(8,"WAVE"); wc(12,"fmt ");
   v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
-  v.setUint32(24,sr,true); v.setUint32(28,sr*2,true);
-  v.setUint16(32,2,true);  v.setUint16(34,16,true);
-  w(36,"data"); v.setUint32(40, n*2, true);
+  v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  wc(36,"data"); v.setUint32(40,n*2,true);
   for (let i = 0; i < n; i++) {
     const t   = i / sr;
-    const env = Math.min(t * 0.8, 1) * Math.min((dur - t) * 0.8, 1);
-    const s   = (
-      0.50 * Math.sin(2*Math.PI * base     * t) +
-      0.28 * Math.sin(2*Math.PI * base * 2 * t) +
-      0.14 * Math.sin(2*Math.PI * base * 3 * t) +
-      0.08 * Math.sin(2*Math.PI * base *.5 * t)
-    ) * env * 0.22;
-    v.setInt16(44 + i*2, Math.max(-32767, Math.min(32767, s * 32767)), true);
+    const env = Math.min(t*.8,1) * Math.min((dur-t)*.8,1);
+    const s   = (.5*Math.sin(2*Math.PI*base*t) + .28*Math.sin(2*Math.PI*base*2*t)
+               + .14*Math.sin(2*Math.PI*base*3*t) + .08*Math.sin(2*Math.PI*base*.5*t)) * env * .22;
+    v.setInt16(44+i*2, Math.max(-32767,Math.min(32767,s*32767)), true);
   }
   return URL.createObjectURL(new Blob([buf], { type:"audio/wav" }));
 }
 
-// ── Video (canvas animation) ──────────────────────────────────
-function toggleVideo(idx) {
-  const row = document.getElementById("player-" + idx);
-  const cvs = document.getElementById("canvas-" + idx);
+// ── Video canvas ──────────────────────────────────────────────
+let activeVid = null;
+function toggleVid(idx) {
+  const row = document.getElementById("vr-" + idx);
+  const cvs = document.getElementById("vc-" + idx);
   if (!row) return;
   if (row.style.display === "none") {
-    Object.entries(videoAnims).forEach(([k, a]) => {
-      if (parseInt(k) !== idx) { a.stop(); delete videoAnims[k]; document.getElementById("player-"+k).style.display = "none"; }
-    });
-    row.style.display = "";
-    videoAnims[idx] = startCanvasVideo(cvs);
+    if (activeVid !== null && activeVid !== idx) {
+      document.getElementById("vr-"+activeVid).style.display = "none";
+      vAnims[activeVid]?.stop(); delete vAnims[activeVid];
+    }
+    row.style.display = "table-row";
+    vAnims[idx] = startCanvas(cvs);
+    activeVid = idx;
   } else {
     row.style.display = "none";
-    videoAnims[idx]?.stop(); delete videoAnims[idx];
+    vAnims[idx]?.stop(); delete vAnims[idx];
+    activeVid = null;
   }
 }
-
-function startCanvasVideo(cvs) {
+function startCanvas(cvs) {
   const ctx = cvs.getContext("2d");
-  let frame = 0, running = true;
+  let frame = 0, alive = true;
   const orbs = [
-    { phase:0.0, rx:180, ry:100, r:32, spd:0.7, clr:"#7c3aed" },
-    { phase:1.0, rx:160, ry: 90, r:26, spd:0.9, clr:"#3b82f6" },
-    { phase:2.1, rx:200, ry:110, r:22, spd:1.1, clr:"#059669" },
-    { phase:3.2, rx:140, ry: 80, r:18, spd:1.3, clr:"#f59e0b" },
-    { phase:4.3, rx:170, ry:100, r:14, spd:1.6, clr:"#ec4899" },
+    {ph:0.0,rx:180,ry:100,r:30,sp:0.7,c:"#7c3aed"},
+    {ph:1.0,rx:160,ry:90, r:24,sp:0.9,c:"#3b82f6"},
+    {ph:2.1,rx:200,ry:110,r:20,sp:1.1,c:"#059669"},
+    {ph:3.2,rx:140,ry:80, r:16,sp:1.3,c:"#f59e0b"},
+    {ph:4.3,rx:170,ry:100,r:12,sp:1.6,c:"#ec4899"},
   ];
-  function draw() {
-    if (!running) return;
-    const W = cvs.width, H = cvs.height, t = frame / 60;
-    ctx.fillStyle = "#0a0a14"; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = "rgba(255,255,255,0.025)"; ctx.lineWidth = 1;
-    for (let x = 0; x < W; x += 70) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-    for (let y = 0; y < H; y += 70) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  (function draw() {
+    if (!alive) return;
+    const W = cvs.width, H = cvs.height, t = frame/60;
+    ctx.fillStyle = "#0a0a14"; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle = "rgba(255,255,255,0.02)"; ctx.lineWidth = 1;
+    for (let x=0;x<W;x+=70){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for (let y=0;y<H;y+=70){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
     orbs.forEach(o => {
-      const x = W/2 + Math.cos(t * o.spd + o.phase) * o.rx;
-      const y = H/2 + Math.sin(t * o.spd * 0.7 + o.phase) * o.ry;
-      const g = ctx.createRadialGradient(x, y, 0, x, y, o.r * 2);
-      g.addColorStop(0, o.clr + "bb"); g.addColorStop(1, o.clr + "00");
-      ctx.beginPath(); ctx.arc(x, y, o.r * 2, 0, Math.PI*2);
+      const x = W/2+Math.cos(t*o.sp+o.ph)*o.rx, y = H/2+Math.sin(t*o.sp*.7+o.ph)*o.ry;
+      const g = ctx.createRadialGradient(x,y,0,x,y,o.r*2.5);
+      g.addColorStop(0,o.c+"cc"); g.addColorStop(1,o.c+"00");
+      ctx.beginPath(); ctx.arc(x,y,o.r*2.5,0,Math.PI*2);
       ctx.fillStyle = g; ctx.fill();
     });
-    ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.font = "13px system-ui";
-    ctx.textAlign = "center";
-    ctx.fillText("▶  Demo Video — no real file", W/2, H - 16);
-    frame++;
-    requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
-  return { stop: () => { running = false; } };
+    ctx.fillStyle="rgba(255,255,255,0.1)"; ctx.font="13px system-ui"; ctx.textAlign="center";
+    ctx.fillText("▶  Demo Video — no real file",W/2,H-16);
+    frame++; requestAnimationFrame(draw);
+  })();
+  return { stop() { alive = false; } };
 }
 
 // ── Image preview ─────────────────────────────────────────────
-function openPreviewByRel(rel) {
-  const ii = imgList.findIndex(i => i.rel === rel);
-  if (ii !== -1) showImage(ii);
+function openImg(rel) {
+  imgIdx = imgList.findIndex(i => i.rel === rel);
+  if (imgIdx === -1) return;
+  showImg(imgIdx);
 }
-function showImage(ii) {
+function showImg(ii) {
   if (ii < 0 || ii >= imgList.length) return;
-  currentImage = ii;
-  const img = imgList[ii];
-  document.getElementById("modal-img").src   = makeSvgImg(img.name, img.clr || ["#7c3aed","#3b82f6"]);
-  document.getElementById("modal-name").textContent = img.name;
+  imgIdx = ii;
+  const e = imgList[ii];
+  document.getElementById("modal-img").src  = makeSvg(e.name, e.clr || ["#7c3aed","#3b82f6"]);
+  document.getElementById("modal-name").textContent = e.name;
   document.getElementById("modal").classList.add("open");
   document.getElementById("modal-prev").style.visibility = ii > 0 ? "" : "hidden";
   document.getElementById("modal-next").style.visibility = ii < imgList.length-1 ? "" : "hidden";
 }
-function modalStep(dir) { showImage(currentImage + dir); }
+function imgStep(d) { showImg(imgIdx + d); }
 function closeModal() {
   document.getElementById("modal").classList.remove("open");
   document.getElementById("modal-img").src = "";
-  currentImage = -1;
 }
-function makeSvgImg(label, [c1, c2]) {
+function makeSvg(label, [c1, c2]) {
   const s = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
     <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/>
     </linearGradient></defs>
     <rect width="800" height="500" fill="url(#g)"/>
     <rect x="1" y="1" width="798" height="498" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
-    <circle cx="400" cy="215" r="64" fill="rgba(0,0,0,0.2)"/>
-    <text x="400" y="225" text-anchor="middle" dominant-baseline="middle"
-          fill="rgba(255,255,255,0.6)" font-size="40">🖼️</text>
-    <text x="400" y="308" text-anchor="middle" fill="rgba(255,255,255,0.75)"
-          font-size="19" font-family="system-ui">${label}</text>
-    <text x="400" y="340" text-anchor="middle" fill="rgba(255,255,255,0.3)"
+    <circle cx="400" cy="210" r="60" fill="rgba(0,0,0,0.2)"/>
+    <text x="400" y="220" text-anchor="middle" dominant-baseline="middle"
+          fill="rgba(255,255,255,0.55)" font-size="38">🖼️</text>
+    <text x="400" y="305" text-anchor="middle" fill="rgba(255,255,255,0.75)"
+          font-size="18" font-family="system-ui">${label}</text>
+    <text x="400" y="338" text-anchor="middle" fill="rgba(255,255,255,0.28)"
           font-size="13" font-family="system-ui">Demo image placeholder</text>
   </svg>`;
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
@@ -593,11 +572,9 @@ function makeSvgImg(label, [c1, c2]) {
 
 document.addEventListener("keydown", e => {
   if (e.key === "Escape")     closeModal();
-  if (e.key === "ArrowLeft")  modalStep(-1);
-  if (e.key === "ArrowRight") modalStep(1);
+  if (e.key === "ArrowLeft")  imgStep(-1);
+  if (e.key === "ArrowRight") imgStep(1);
 });
-
-function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 </script>
 </body>
 </html>
