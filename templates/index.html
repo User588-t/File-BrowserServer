@@ -219,6 +219,9 @@
   let sortCol      = "name";
   let sortDir      = 1;
 
+  // ── Constants ─────────────────────────────────────────────
+  const ICONS = { folder:"📁", audio:"🎵", image:"🖼️", video:"🎬", file:"📄" };
+
   // ── Boot ──────────────────────────────────────────────────
   applyEntries(ENTRIES, currentRel, false);
   window.addEventListener("popstate", e => loadFolder(e.state?.rel ?? "", false));
@@ -277,8 +280,6 @@
   }
 
   // ── Render table ──────────────────────────────────────────
-  const ICONS = { folder:"📁", audio:"🎵", image:"🖼️", video:"🎬", file:"📄" };
-
   function renderTable(entries) {
     const tbody = document.getElementById("file-tbody");
     const table = document.getElementById("file-table");
